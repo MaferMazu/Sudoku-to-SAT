@@ -14,6 +14,18 @@ def getEmptyMatrix(n):
     for i in range(n):
         main_matrix.append([])
     return main_matrix
+#####################################################    
+def crear_archivo(sat_sol):
+    f = open ('sat_solution.txt','w')
+    f.write('c Ejemplo de solución para fórmula en CNF\nc\n')
+    tam = len(sat_sol)
+    if (sat_sol == []):
+        f.write('s cnf '+str(0)+" "+str(tam)+"\n")
+    else:
+        f.write('s cnf '+str(1)+" "+str(tam)+"\n")
+        for i in range(tam):
+            f.write('v '+str(sat_sol[i])+"\n")
+    f.close()
 ####################################################
 def validar_tablero(tablero, dim, negativos):
     solucion = False
@@ -109,5 +121,6 @@ for linea in file_array:
 
 solucion = cambiar_negativo(negatives,tablero,2,3)
 print("LA SOLUCION:")
+crear_archivo(solucion)
 print(solucion)
 
