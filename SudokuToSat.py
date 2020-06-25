@@ -21,46 +21,114 @@ def Sudoku(length,table):
         count = count + 1
     return sudoku
 
-#Generador de variables
-def variablesGenerator(sudoku):
-    myalphabet = ALPHABET[:(len(sudoku))]
-    print(myalphabet)
+#Generador de verdad de los valores iniciales
+def initialToTrue(sudoku):
+    global expresion
+    global nConjunctions
     row = 0
-    variables = []
+    first = True
+    for line in sudoku:
+        column = 0
+        for elem in line:
+            if elem != "0":
+                var = toVar(elem,row,column,sudoku)
+                if first:
+                    expresion = expresion + str(var)
+                    first = False
+                else:
+                    expresion = expresion + " 0 " + str(var)
+                nConjunctions = nConjunctions + 1
+            column = column + 1
+        row = row + 1
+    if len(expresion)!=0:
+        expresion = expresion + " 0\n"
+
+#Todas las casillas deben tener un num entre 1 y n
+def everyCell(sudoku):
+    global expresion
+    global nConjunctions
+    global ALPHABET
+    row = 0
     for line in sudoku:
         column = 0
         for elem in line:
             if elem == "0":
-                variables.append(["0",row,column])
+                for digit in ALPHABET[:(len(sudoku))]:
+                    var = toVar(digit,row,column,sudoku)
+                    expresion = expresion + str(var) + " "
+                expresion = expresion + "0 \n"
+                nConjunctions = nConjunctions + 1
             column = column + 1
         row = row + 1
-    return variables
+    expresion = expresion + "\n"
+    nConjunctions = nConjunctions - 1
 
-""" def rowRule(sudoku,variables):
-    
-    print(myalphabet)
-    for row in sudoku:
-        for elem in row:
-            if 
-                for elem in myalphabet: """
+#Todas las filas deben tener los numeros de 1 a n
+""" def rowVerification(sudoku):
+    global expresion
+    global nConjunctions
+    global ALPHABET
+    row = 0
+    for line in sudoku:
+        column = 0
+        for elem in line:
+            if elem == "0":
+                for digit in ALPHABET[:(len(sudoku))]:
+                    var = toVar(digit,row,column,sudoku)
+                    expresion = expresion + "-"+str(var) + " "
+                expresion = expresion + "0 \n"
+                nConjunctions = nConjunctions + 1
+            column = column + 1
+        row = row + 1
+    expresion = expresion + "\n"
+    nConjunctions = nConjunctions - 1 """
+        
+
+#Convertir en variable
+def toVar(digit,row,column,sudoku):
+    global ALPHABET
+    digitIndex = (ALPHABET[:(len(sudoku))]).index(digit)
+    lenght = len(sudoku)
+    maxi = (row+1) * (lenght**2)
+    mini = maxi - lenght**2
+    number = mini+1 + (column * lenght) + digitIndex
+    return number
+
+
+expresion = ""
+nConjunctions = 0
+ALPHABET = ["1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","."]
+
+
 
 def main():
     #MAIN
     global ALPHABET
     global nTable
-    ALPHABET = ["1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","."]
-
     #Leo archivo de entrada de un txt
-    f = open ('input1.txt','r')
-    lines = f.readlines()
+    inputfile = open ('input1.txt','r')
+    lines = inputfile.readlines()
     nTable = 0
+    outputfile = open('output.txt',"w+")
     for line in lines:
+        global nConjunctions
+        global output
+        global expresion
+        expresion = ""
+        nConjunctions = 0
+        output = "c Este es el tablero " + str(nTable) + " en CNF\n"
         length,table = getLengthAndTable(line)
         sudoku=Sudoku(length,table)
-        print("Sudoku " + str(nTable) + "\n"+str(sudoku))
-        variables = variablesGenerator(sudoku)
-        print("Variables "+ str(nTable) + "\n"+str(variables))
+        initialToTrue(sudoku)
+        everyCell(sudoku)
+        output = output + "p cnf " + str((len(sudoku))**3) + " " + str(nConjunctions) + "\n"
+        output = output + str(expresion) + "\n"
+        print(output)
+        outputfile.write(output)
         nTable = nTable + 1
+    outputfile.close()
+    inputfile.close()
+
 
 if __name__ == "__main__":
     main()
