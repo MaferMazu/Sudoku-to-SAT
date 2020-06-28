@@ -64,7 +64,7 @@ def everyCell(sudoku):
     nConjunctions = nConjunctions - 1
 
 #Todas las filas deben tener los numeros de 1 a n
-""" def rowVerification(sudoku):
+def rowVerification(sudoku):
     global expresion
     global nConjunctions
     global ALPHABET
@@ -75,13 +75,17 @@ def everyCell(sudoku):
             if elem == "0":
                 for digit in ALPHABET[:(len(sudoku))]:
                     var = toVar(digit,row,column,sudoku)
-                    expresion = expresion + "-"+str(var) + " "
-                expresion = expresion + "0 \n"
-                nConjunctions = nConjunctions + 1
+                    disjun = "-"+str(var) + " "
+                    for i in range(0,len(sudoku)):
+                        if i != column:
+                            var = toVar(digit,row,i,sudoku)
+                            expresion = expresion + disjun + "-"+str(var)+ " 0 "
+                            nConjunctions = nConjunctions + 1    
+                expresion = expresion + "\n"  
             column = column + 1
         row = row + 1
     expresion = expresion + "\n"
-    nConjunctions = nConjunctions - 1 """
+ 
         
 
 #Convertir en variable
@@ -106,7 +110,7 @@ def main():
     global ALPHABET
     global nTable
     #Leo archivo de entrada de un txt
-    inputfile = open ('input1.txt','r')
+    inputfile = open ('inputeasy.txt','r')
     lines = inputfile.readlines()
     nTable = 0
     outputfile = open('output.txt',"w+")
@@ -121,6 +125,7 @@ def main():
         sudoku=Sudoku(length,table)
         initialToTrue(sudoku)
         everyCell(sudoku)
+        rowVerification(sudoku)
         output = output + "p cnf " + str((len(sudoku))**3) + " " + str(nConjunctions) + "\n"
         output = output + str(expresion) + "\n"
         print(output)
