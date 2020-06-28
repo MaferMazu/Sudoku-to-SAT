@@ -61,7 +61,7 @@ def everyCell(sudoku):
             column = column + 1
         row = row + 1
     expresion = expresion + "\n"
-    nConjunctions = nConjunctions - 1
+    
 
 #Todas las filas deben tener los numeros de 1 a n
 def rowVerification(sudoku):
@@ -79,6 +79,29 @@ def rowVerification(sudoku):
                     for i in range(0,len(sudoku)):
                         if i != column:
                             var = toVar(digit,row,i,sudoku)
+                            expresion = expresion + disjun + "-"+str(var)+ " 0 "
+                            nConjunctions = nConjunctions + 1    
+                expresion = expresion + "\n"  
+            column = column + 1
+        row = row + 1
+    expresion = expresion + "\n"
+
+#Todas las columnas deben tener los numeros de 1 a n
+def columnVerification(sudoku):
+    global expresion
+    global nConjunctions
+    global ALPHABET
+    row = 0
+    for line in sudoku:
+        column = 0
+        for elem in line:
+            if elem == "0":
+                for digit in ALPHABET[:(len(sudoku))]:
+                    var = toVar(digit,row,column,sudoku)
+                    disjun = "-"+str(var) + " "
+                    for i in range(0,len(sudoku)):
+                        if i != row:
+                            var = toVar(digit,i,column,sudoku)
                             expresion = expresion + disjun + "-"+str(var)+ " 0 "
                             nConjunctions = nConjunctions + 1    
                 expresion = expresion + "\n"  
@@ -126,6 +149,7 @@ def main():
         initialToTrue(sudoku)
         everyCell(sudoku)
         rowVerification(sudoku)
+        columnVerification(sudoku)
         output = output + "p cnf " + str((len(sudoku))**3) + " " + str(nConjunctions) + "\n"
         output = output + str(expresion) + "\n"
         print(output)

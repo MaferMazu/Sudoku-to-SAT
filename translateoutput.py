@@ -63,6 +63,7 @@ def main():
                         else:
                             #print("Sot tok[0]"+ str(tok[0]))
                             output = output + str(varToProp(tok,n))+ " "
+                output = output + "\n"
             output = output + "\n"
     print(output)
 
