@@ -180,10 +180,10 @@ def main():
         output = "c Este es el tablero " + str(nTable) + " en CNF\n"
         length,table = getLengthAndTable(line)
         sudoku=Sudoku(length,table)
-        #initialToTrue(sudoku)
-        #everyCell(sudoku)
-        #rowVerification(sudoku)
-        #columnVerification(sudoku)
+        initialToTrue(sudoku)
+        everyCell(sudoku)
+        rowVerification(sudoku)
+        columnVerification(sudoku)
         squareVerification(sudoku)
         expresion = expresion[:-3]
         output = output + "p cnf " + str((len(sudoku))**3) + " " + str(nConjunctions) + "\n"
