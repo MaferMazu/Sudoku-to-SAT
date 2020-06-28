@@ -48,7 +48,7 @@ def main():
                 n=str(n)
                 n=int(n[0])
             elif line[0] == "c":
-                output = output + "\n\n"+ line + "\n"
+                output = output + line
             else:
                 #print(line[0])
                 token = line.split(" ")
