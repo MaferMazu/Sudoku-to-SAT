@@ -1,126 +1,141 @@
 #Import Libraries
 import re
-import numpy as np
+######################################################
+# cells_asociation: Map the set of values to their
+# respective Sudoku Cell
+
+def cells_association(n):
+    diccionario = {}
+
+    for i in range(n**4):    
+        j = (i*(n**2))+1
+        top = ((i+1)*(n**2))
+        while (j <= top):
+            # SON LOS VALORES DE LA COLUMNA
+            diccionario[str(j)]= i            
+            j = j+1
+            
+    return diccionario
+######################################################
+# values_asociation: Map the set of values to their
+# respective Sudoku Number
+
+def values_association(n):
+    diccionario = {}
+
+    for i in range(n**4):    
+        j = (i*(n**2))+1
+        top = ((i+1)*(n**2))
+        while (j <= top):
+            # SON LOS VALORES DE LA COLUMNA
+            diccionario[str(j)]= j-4*i           
+            j = j+1
+            
+    return diccionario
 
 ######################################################
-def valido(arr):
-    if(arr[1] == "cnf"):
-        return true
-    else:
-        return false
-#####################################################    
-def getEmptyMatrix(n):
-    main_matrix = []
-    for i in range(n):
-        main_matrix.append([])
-    return main_matrix
-#####################################################    
-def crear_archivo(sat_sol):
-    f = open ('sat_solution.txt','w')
-    f.write('c Ejemplo de solución para fórmula en CNF\nc\n')
-    tam = len(sat_sol)
-    if (sat_sol == []):
-        f.write('s cnf '+str(0)+" "+str(tam)+"\n")
-    else:
-        f.write('s cnf '+str(1)+" "+str(tam)+"\n")
-        for i in range(tam):
-            f.write('v '+str(sat_sol[i])+"\n")
-    f.close()
-####################################################
-def validar_tablero(tablero, dim, negativos):
-    solucion = False
-    values = []
-    
-    while(not solucion):
-        
-        for i in range(dim):
-            try:
-                indices=np.where(tablero[i] == True)
-            except ValueError:
-#                print("buscar los negativos")
-                for neg in negativos:
-#                    print("verificar si alguno esta en esa fila")
-                    if (neg[0]==i):
-                        values = cambiar_negativo(negativos,tablero,i,dim)
-                        break
+# boolean_asociation: fit the boolean value of
+# each variable in the starting state
+
+def boolean_association(n, fijos):
+    diccionario = {}
+
+    for i in range(n**4):    
+        j = (i*(n**2))+1
+        top = ((i+1)*(n**2))
+        while (j <= top):
+            # SON LOS VALORES DE LA COLUMNA
+            if (j in fijos):
+                diccionario[str(j)]= True           
             else:
-#                print("indices:")
-#                print(indices[0])
-#                print("values:")
-#                print(values)
-                values = np.unique(np.concatenate((values,indices[0])).astype(int))
-        break
-        
-    return values
-
-######################################################
-def cambiar_negativo(negaciones, table, line, r):
-#    print("................................")
-    for t in negaciones:
-
-        if (t[0]==line and table[line][t[1]]==False):
-            column = t[1]
-            
-            for i in range(r):
+                diccionario[str(j)]= None
+            j = j+1
                 
-                if( table[i][column]==False):
-                    table[i][column]=True
+    return diccionario
+######################################################
+######################################################
+# getTable: return an array with the strings of the
+#document file_array
+######################################################
+def getTable(file_array):
+    dimension = 0
+    n = 0
+    clausulas = 0
+    for linea in file_array:
+        patron_C = re.search('c', linea)
+        if (patron_C != None):
+            if(patron_C.start()!=0):
+                values = re.split(' ', linea)
+                dimension = int(values[2])
+                clausulas = int(values[3])
+                if (dimension == 4):
+                    n = 1
+                    break
+                if (dimension == 64):
+                    n = 2
+                    break
+                if (dimension == 729):
+                    n = 3
+                    break
+                if (dimension == 4096):
+                    n = 4
+                if (dimension == 15625):
+                    n = 5
+                    break
+                if (dimension == 46656):
+                    n = 6
+                    break
                 else:
-                    table[i][column]=False
-            break
-            
-    val = validar_tablero(table,r,negaciones)
-#    print("+++++++++++++")
-    for i in range(len(val)):
-#        print(val[i])
-        for j in negaciones:
-#            print("negaciones:")
-#            print(j)
-            if (j[1]==i):
-#               print("    encontró una:")
-                val[i]= -val[i]
-#    print("+++++++++++++")
-    return val       
-                
-######################################################
+                    print("invalid dimension")
+    file_array.pop(0)
+    file_array.pop(0)
+    return file_array, n, dimension, clausulas
 
 archivo = open("cnf.txt", "r")
 
-num_var = 0
-num_conj = 0
-tablero = np.array([])
-row = 0
-negatives = []
 file_array = archivo.readlines()
 archivo.close()
 
-for linea in file_array:
-    patron_C = re.search('c', linea)
+file_array, n, dimension, clausulas = getTable(file_array)
 
-    if (patron_C==None):
-        #This case means the line has not a 'c' so is neither the commentary
-        #neither the p
+asignados = re.split(" 0", file_array[0])
+file_array.pop(0)
+asignados.pop()
+
+fijos = [int(x) for x in asignados]
+conjunciones = re.split("0", file_array[1])
+
+#print(fijos)    
+#print(clausulas)
+#print(conjunciones)
+
+
+mapeo_posicion = cells_association(n)
+mapeo_valor = values_association(n)
+mapeo_boolean = boolean_association(n,fijos)
+#def cell_market(f,p):
+
+ #   for v i fijos:
         
-        for indx in linea.split(" "):
-            indice = int(indx)
-            if (indice>=0):
-                tablero[row][indice]=True
-            else:
-                negatives.append([row,-indice])
-        row = row+1   
-    else:
-        if(patron_C.start()!=0):
-            values = re.split(' ', linea)
-            num_var = int(values[2])+1
-            num_conj = int(values[3])
-            tablero = np.zeros((num_conj, num_var), dtype=bool)    
+#celdas_ocupadas = cell_market(fijos, mapeo_posicion)
+#mapeo_booleano = boolean_values(asignados, asignados_values, asignados_posicion)
+#print(mapeo_posicion)
+#print(mapeo_valor)
+print(mapeo_boolean)
+
+#print (mapeo_boolean["1"])
+
+for linea in file_array:
+    disjunciones = re.split(" 0 ", linea)
+    disjunciones.pop()
+    #print(disjunciones)
+print("###############################################")
+for j in fijos:
+    val = mapeo_valor[str(j)]
+    for x in range(0,n,n**2):
+        if(mapeo_boolean[str(x+val)]!=True):
+            mapeo_boolean[str(x+val)] = False
+print(mapeo_boolean)
     
-#print(tablero)
-#print()
-#print(negatives)
 
-solucion = cambiar_negativo(negatives,tablero,2,3)
-print("LA SOLUCION:")
-crear_archivo(solucion)
-print(solucion)
-
+#x = [int(x) for x in range(0,n**6,n**2)]
