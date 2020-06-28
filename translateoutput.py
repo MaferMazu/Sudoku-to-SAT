@@ -10,8 +10,8 @@ def varToProp(var,n):
         row = row -1
     row = str(row)
     row = int(row[0])
-    print("Mi init var="+str(var))
-    print("Mi row="+str(row))
+    #print("Mi init var="+str(var))
+    #print("Mi row="+str(row))
     var = var - row*(n**2)
     #print("Mi var - row="+str(var))
     column = (var/n)
@@ -63,7 +63,6 @@ def main():
                         else:
                             #print("Sot tok[0]"+ str(tok[0]))
                             output = output + str(varToProp(tok,n))+ " "
-                output = output + "\n"
             output = output + "\n"
     print(output)
 

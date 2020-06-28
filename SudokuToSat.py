@@ -60,7 +60,7 @@ def everyCell(sudoku):
                 nConjunctions = nConjunctions + 1
             column = column + 1
         row = row + 1
-    expresion = expresion + "\n"
+    #expresion = expresion + "\n"
     
 
 #Todas las filas deben tener los numeros de 1 a n
@@ -84,7 +84,7 @@ def rowVerification(sudoku):
                 expresion = expresion + "\n"  
             column = column + 1
         row = row + 1
-    expresion = expresion + "\n"
+    #expresion = expresion + "\n"
 
 #Todas las columnas deben tener los numeros de 1 a n
 def columnVerification(sudoku):
@@ -107,7 +107,7 @@ def columnVerification(sudoku):
                 expresion = expresion + "\n"  
             column = column + 1
         row = row + 1
-    expresion = expresion + "\n"
+    #expresion = expresion + "\n"
  
         
 
