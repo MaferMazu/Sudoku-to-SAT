@@ -1,24 +1,22 @@
-
-
 def varToProp(var,n):
     global ALPHABET
     var=int(var)
     #print("mi n="+str(n))
     #print(n**2)
-    row = (var/(n**2))
+    row = (var//(n**2))
     if var%(n**2)==0 and row!=0:
         row = row -1
-    row = str(row)
-    row = int(row[0])
+    #row = str(row)
+    #row = int(row[0])
     #print("Mi init var="+str(var))
     #print("Mi row="+str(row))
     var = var - row*(n**2)
     #print("Mi var - row="+str(var))
-    column = (var/n)
+    column = (var//n)
     if var%(n)==0 and column!=0:
         column = column -1
-    column = str(column)
-    column = int(column[0])
+    #column = str(column)
+    #column = int(column[0])
     #print("Mi column="+str(column))
     var = var - column*n
     #print("Mi var - column="+str(var))
@@ -45,8 +43,8 @@ def main():
                 ##print("Mi cantidad de vars es="+str(token[2]))
                 n = int(token[2])
                 n = n**(1./3.)
-                n=str(n)
-                n=int(n[0])
+                n=int(n)
+                #n=int(n[0])
             elif line[0] == "c":
                 output = output + line
             else:
@@ -57,12 +55,12 @@ def main():
                     tok.strip()
                     if len(tok)>0:
                         if tok[0]=="-":
-                            output = output + "-" +str(varToProp(tok[1:],n))+ " "
+                            output = output + "-" +str(varToProp(tok[1:],n+1))+ " "
                         elif tok[0]=="0":
                             output = output + " ^ "
                         else:
                             #print("Sot tok[0]"+ str(tok[0]))
-                            output = output + str(varToProp(tok,n))+ " "
+                            output = output + str(varToProp(tok,n+1))+ " "
             output = output + "\n"
     print(output)
 

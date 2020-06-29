@@ -122,9 +122,9 @@ def squareVerification(sudoku):
         column = 0
         for elem in line:
             if elem == "0":
-                squareRow= row/squareLen
+                squareRow= row//squareLen
                 #print("squareRow "+str(squareRow))
-                squareColumn = column/squareLen
+                squareColumn = column//squareLen
                 #print("squareColumn "+str(squareColumn))
                 for digit in ALPHABET[:(len(sudoku))]:
                     var = toVar(digit,row,column,sudoku)
