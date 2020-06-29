@@ -1,3 +1,4 @@
+from sys import argv
 def varToProp(var,n):
     global ALPHABET
     var=int(var)
@@ -31,7 +32,10 @@ ALPHABET = ["1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H",
 def main():
     #MAIN
     global ALPHABET
-    inputfile = open ('output.txt','r')
+    filepath = 'outputs/output.txt'
+    if len(argv) > 0:
+        filepath = argv[1]
+    inputfile = open (filepath,'r')
     lines = inputfile.readlines()
     output = ""
     n=0

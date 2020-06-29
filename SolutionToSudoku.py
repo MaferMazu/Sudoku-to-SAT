@@ -1,4 +1,4 @@
-
+from sys import argv
 def toSudoku(var,n):
     global ALPHABET
     var=int(var)
@@ -44,16 +44,13 @@ ALPHABET = ["1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H",
 matrix = []
 output = ""
 
-def main():
-    #MAIN
+def SolutionToSudoku(filepath):
     global ALPHABET
     global matrix
     global output
-    inputfile = open ('outputrosi.txt','r')
+    inputfile = open (filepath,'r')
     lines = inputfile.readlines()
     n=0
-    
-    
     for line in lines:
         #print(line)
         line=line.rstrip("\n")
@@ -91,6 +88,18 @@ def main():
     output = output + "\n"
     #print(matrix)
     print(output)
+
+
+def main():
+    #MAIN
+    global ALPHABET
+    global matrix
+    global output
+    filepath = 'outputs/outputcnfexample.txt'
+    if len(argv) > 0:
+        filepath = argv[1]
+    SolutionToSudoku(filepath)
+    
 
 if __name__ == "__main__":
     main()

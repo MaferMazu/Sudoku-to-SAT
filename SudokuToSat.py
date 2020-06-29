@@ -1,3 +1,4 @@
+from sys import argv
 #Obtener informacion de un tablero
 def getLengthAndTable(line):
     tokens = line.split()
@@ -160,17 +161,13 @@ expresion = ""
 nConjunctions = 0
 ALPHABET = ["1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","."]
 
-
-
-def main():
-    #MAIN
+def SudokuToSat(filepath):
     global ALPHABET
     global nTable
-    #Leo archivo de entrada de un txt
-    inputfile = open ('input1.txt','r')
+    inputfile = open (filepath,'r')
     lines = inputfile.readlines()
     nTable = 0
-    outputfile = open('output.txt',"w+")
+    outputfile = open('outputs/output.txt',"w+")
     for line in lines:
         global nConjunctions
         global output
@@ -193,6 +190,17 @@ def main():
         nTable = nTable + 1
     outputfile.close()
     inputfile.close()
+
+def main():
+    #MAIN
+    global ALPHABET
+    global nTable
+    #Leo archivo de entrada de un txt
+    filepath = 'inputs/input1.txt'
+    if len(argv) > 0:
+        filepath = argv[1]
+    SudokuToSat(filepath)
+    
 
 
 if __name__ == "__main__":

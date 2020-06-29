@@ -60,10 +60,10 @@ Primero vamos a definir p(d,f,c) en donde -1 < d < N² y representa el dígito q
 
 A partir de esta notación si queremos representar el 4 que se encuentra en la primera fila del ejemplo tendríamos: p(4,1,4)
 
-## El programa translateOutput.txt
+## El programa translateSat.txt
 
 Al usar:
-`> python3 translateOutput.txt`
+`> python3 translateSat.txt`
 
 Se puede visualizar el output del SudokuToSat en forma de p(d,f,c)
 
