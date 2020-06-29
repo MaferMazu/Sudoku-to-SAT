@@ -1,4 +1,3 @@
-#Import Libraries
 import re
 
 def SAT(estados):
@@ -11,36 +10,47 @@ def SAT(estados):
     #print(state)
     
     root = Nodo(state, cl)
-    
-##############################################################
-# ClASE Tree
-##############################################################
-class Tree:
-    def __init__(self):
-        self.raiz = None
-        self.estado = []
+    root.search_valid_state()
+    print(root.estado)
+
 #############################################################
 # CLASE NODO
 #############################################################
 class Nodo:
     def __init__(self, state, clausula):
-        self.estado=value
+        self.estado=state
         self.clausula = clausula
         siguiente = None
         self.valido = False # Recorrido 
         
-    def build_tree(self):  
-        p = self.estado.index()+1
-        
-        if (n>1):
-            posicion=0            
-            for s in self.sucesores:
-                new_suc = new_list(self.sucesores, self.nivel+1, posicion)
-                posicion=posicion+1
-                if(new_suc!=[]):
-                    s.sucesores=new_suc
-                    s.build_tree()
-            
+    def search_valid_state(self):
+        p = str(self.estado.index(None)+1)
+        print(p,end = " ")
+        for c in(self.clausula):
+            if((p in c) or (("-"+p) in c) ):
+                print(c)
+                # Suponemos p=True
+                mapeo_boolean[p] = True
+                new_s = []
+                for l in c:
+                    mapeo_boolean[p]=True
+                    self.estado[int(p)-1]=True
+                    # Supongamos True
+                    a = True
+                    if(int(l)<0):
+                        a = False or not mapeo_boolean[str(-1*int(l))]
+                    else:
+                        m = mapeo_boolean[str(l)]
+                        
+                        if(m == None):
+                            self.search_valid_state()
+                        else:
+                            a = a or m  
+                            
+                if (a == True):
+                    print("Valido")
+                else:
+                    print("No satisfactible")
 ###########################################                
 def new_list(suc,nivel,pos):
     v = []
@@ -213,7 +223,7 @@ def main():
         disjunciones.pop()
         disj.append(disjunciones)
     
-    #print(mapeo_boolean.values())
+    #print(mapeo_boolean)
     sol = SAT(disj)
 ###########################################################    
     
@@ -221,46 +231,3 @@ if __name__ == "__main__":
     main()
 
 #########################################################
-file_array, n, dimension, clausulas = getTable(file_array)
-
-asignados = re.split(" 0", file_array[0])
-file_array.pop(0)
-asignados.pop()
-
-fijos = [int(x) for x in asignados]
-conjunciones = re.split("0", file_array[1])
-
-#print(fijos)    
-#print(clausulas)
-#print(conjunciones)
-
-
-mapeo_posicion = cells_association(n)
-mapeo_valor = values_association(n)
-mapeo_boolean = boolean_association(n,fijos)
-#def cell_market(f,p):
-
- #   for v i fijos:
-        
-#celdas_ocupadas = cell_market(fijos, mapeo_posicion)
-#mapeo_booleano = boolean_values(asignados, asignados_values, asignados_posicion)
-#print(mapeo_posicion)
-#print(mapeo_valor)
-print(mapeo_boolean)
-
-#print (mapeo_boolean["1"])
-
-for linea in file_array:
-    disjunciones = re.split(" 0 ", linea)
-    disjunciones.pop()
-    #print(disjunciones)
-print("###############################################")
-for j in fijos:
-    val = mapeo_valor[str(j)]
-    for x in range(0,n,n**2):
-        if(mapeo_boolean[str(x+val)]!=True):
-            mapeo_boolean[str(x+val)] = False
-print(mapeo_boolean)
-    
-
-#x = [int(x) for x in range(0,n**6,n**2)]
