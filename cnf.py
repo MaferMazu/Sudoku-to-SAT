@@ -11,8 +11,13 @@ def SAT(estados):
     
     root = Nodo(state, cl)
     root.search_valid_state()
-    print(root.estado)
-
+##############################################################
+# ClASE Tree
+##############################################################
+class Tree:
+    def __init__(self):
+        self.raiz = None
+        self.estado = []
 #############################################################
 # CLASE NODO
 #############################################################
@@ -24,33 +29,41 @@ class Nodo:
         self.valido = False # Recorrido 
         
     def search_valid_state(self):
-        p = str(self.estado.index(None)+1)
-        print(p,end = " ")
-        for c in(self.clausula):
-            if((p in c) or (("-"+p) in c) ):
-                print(c)
-                # Suponemos p=True
-                mapeo_boolean[p] = True
-                new_s = []
-                for l in c:
-                    mapeo_boolean[p]=True
-                    self.estado[int(p)-1]=True
-                    # Supongamos True
-                    a = True
-                    if(int(l)<0):
-                        a = False or not mapeo_boolean[str(-1*int(l))]
-                    else:
-                        m = mapeo_boolean[str(l)]
-                        
-                        if(m == None):
-                            self.search_valid_state()
-                        else:
-                            a = a or m  
-                            
-                if (a == True):
-                    print("Valido")
-                else:
-                    print("No satisfactible")
+        try:
+            
+            p = self.estado.index(None)
+            print(p)
+            new_state = self.estado
+            print(new_state)
+            new_state[0] = False
+            
+            self.siguiente.append(Nodo(new_state,self.clausula))
+            
+            print(len(self.siguiente))
+            new_state2[p] = True
+            print(new_state2)
+            self.siguiente.append(Nodo(new_state2,self.clausula))
+            
+            for c in(self.siguiente):
+                c.search_valid_state()
+        except:
+            #for c in self.clausula:
+            print("")
+    
+    def compare(self):
+        b = True
+        for x in self.clausula:
+            a = False
+            for l in range(len(x)):
+                # compara con False
+                v = int(x[l])
+                if (v<0):
+                    boolean = mapeo_boolean[str(-1*v)]
+                    a = a or boolean
+            b = b and a
+        print("el valor de b es: ", end=" ")
+        print(b)
+                
 ###########################################                
 def new_list(suc,nivel,pos):
     v = []
@@ -231,3 +244,4 @@ if __name__ == "__main__":
     main()
 
 #########################################################
+
