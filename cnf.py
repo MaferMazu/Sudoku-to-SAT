@@ -25,7 +25,6 @@ class Nodo:
         self.clausula = clausula
         self.siguiente = []
         
-    
     def search_valid_state(self):
         if (self.tiene_None()):
             # Inicializo las nuevas Ramas
@@ -45,7 +44,8 @@ class Nodo:
             sol = []
             for i in self.siguiente:
                 i.search_valid_state()
-        else:                  
+        else:
+            
             self.verify_clausule()
     
         
