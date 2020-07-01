@@ -11,7 +11,7 @@ def new_false(estado, n):
 def SAT(clausulas):
     estado = [x for x in mapeo_boolean.values()]  
     #print(clausulas)
-    print(estado)
+    #print(estado)
     #root = Nodo(estado,clausulas)
     #root = Nodo(estado,clausulas)
     #root.search_valid_state()
@@ -248,7 +248,8 @@ def get_clausules(clausulas, n_clausulas):
 #                posicion.append(i)
 #        var_clausule_position.append(posicion)
 #    print(var_clausule_position)
-        
+
+
         
 #########################################################
 def main():
@@ -258,7 +259,7 @@ def main():
     global mapeo_column  # columna
     global mapeo_fila  # fila
     global mapeo_boolean # Valor Booleano Asignado
-    archivo = open("cnf.txt", "r")
+    archivo = open("outputs/output.txt", "r")
     file_array = archivo.readlines()
     archivo.close()
 
@@ -290,11 +291,41 @@ def main():
     print("")
     
     disj = []
+    count = 1
+    unit_clausules = [[] for j in range(n**4)]
+    print(unit_clausules)
     
     for linea in file_array:
+
         disjunciones = re.split(" 0 ", linea)
         disjunciones.pop()
         disj.append(disjunciones)
+
+    firstCicle=True
+    for linea in file_array[1:]:
+        #print(linea)
+        if firstCicle and count > n**4:
+            firstCicle = False
+        rest = count%(n**4)
+        #print(count,rest)
+        disjunciones = re.split(" 0 ", linea)
+        #print(disjunciones)
+        disjunciones.pop()
+        if not firstCicle:
+            if rest ==0:
+                unit_clausules[(n**4)-1] = unit_clausules[(n**4)-1] + disjunciones
+            else:
+                unit_clausules[rest-1]=unit_clausules[rest-1]+disjunciones
+        else:
+            if rest == 0:
+                unit_clausules[(n**4)-1]=disjunciones
+            else:
+                unit_clausules[rest-1]=disjunciones
+        count = count + 1
+    print(unit_clausules)
+
+    
+        
 ###########################################################
     clausula = []
     for e in disj:
@@ -302,7 +333,7 @@ def main():
             clausula.append(re.split(" ",e[i]))            
     int_clausulas = get_clausules(clausula, len(clausula))
     
-#    sol = SAT(int_clausulas)
+    sol = SAT(int_clausulas)
 ###########################################################    
     
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "
 "
-echo "Script 2 to compare zChaff and own programm input1.txt
+echo "Script 2: Compara el zChaff con nuestro algoritmo para el archivo: input1.txt con T=4100
 "
 T=4100
 python3 SudokuToSat.py inputs/input1.txt > outputs/output.txt
