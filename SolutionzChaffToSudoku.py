@@ -51,42 +51,46 @@ def SolutionToSudoku(filepath):
     inputfile = open (filepath,'r')
     lines = inputfile.readlines()
     n=0
+    count = 0
+    variables=[]
+    number = 1
+    time=-1
     for line in lines:
         #print(line)
-        line=line.rstrip("\n")
-        if len(line)>0:
-            if line[0] == "s":
-                token = line.split(" ")
-                max = int(token[3])
-                if token[2]=="1":
-                    n = (float(token[3]))**(1./3.)
-                    n = int(n)
-                    matrix = [ [ "0" for i in range(n+1) ] for j in range(n+1) ]
-                    """ elem=[]
-                    for i in range(0,n+1):
-                        elem.append("0")
-                    for i in range(0,n+1):
-                        matrix.append(elem) """
-                    #print("Matriz tamano "+str(len(matrix))+"\n"+str(matrix))
-                
-            elif line[0] == "v":
-                max = max - 1
-                #print(line[0])
-                token = line.split(" ")
-                if len(token[1])>0:
-                    if token[1][0] != "-":
-                        #print("La variable" + str(token[1]))
-                        digit,row,column=toSudoku(token[1],n+1)
+        if count == 5:
+            line=line.rstrip("\n")
+            variables = line.split(" ")[:-3]
+            count = count + 1
+        elif count == 9:
+            line=line.rstrip("\n")
+            token = line.split("\t")
+            number = int(token[-1])
+            n = (float(number))**(1./3.)
+            n = int(n)
+            matrix = [ [ "0" for i in range(n+1) ] for j in range(n+1) ]
+            for elem in variables:
+                if len(elem)>0:
+                    if elem[0] != "-":
+                        #print("La variable" + str(elem))
+                        digit,row,column=toSudoku(elem,n+1)
                         #print("p("+str(digit)+", "+str(row)+", "+str(column)+")")
                         #print(matrix[row][column])
                         matrix[row][column] = digit
                         #print(matrix)
-                if max == 0:
-                    printOutput(n)
-
-    output = output + "\n"
-    #print(matrix)
+            count = count +1
+            
+        elif count == 19:
+            line=line.rstrip("\n")
+            token = line.split("\t")
+            time = token[-1]
+            count = count +1
+            print("El tiempo de zChaff fue de: "+str(time))
+        else:
+            count = count +1
+    printOutput(n)
     print(output)
+
+
 
 
 def main():

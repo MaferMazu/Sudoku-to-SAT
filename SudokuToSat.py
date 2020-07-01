@@ -53,12 +53,11 @@ def everyCell(sudoku):
     for line in sudoku:
         column = 0
         for elem in line:
-            if elem == "0":
-                for digit in ALPHABET[:(len(sudoku))]:
-                    var = toVar(digit,row,column,sudoku)
-                    expresion = expresion + str(var) + " "
-                expresion = expresion + "0 \n"
-                nConjunctions = nConjunctions + 1
+            for digit in ALPHABET[:(len(sudoku))]:
+                var = toVar(digit,row,column,sudoku)
+                expresion = expresion + str(var) + " "
+            expresion = expresion + "0 \n"
+            nConjunctions = nConjunctions + 1
             column = column + 1
         row = row + 1
     #expresion = expresion + "\n"
@@ -73,16 +72,15 @@ def rowVerification(sudoku):
     for line in sudoku:
         column = 0
         for elem in line:
-            if elem == "0":
-                for digit in ALPHABET[:(len(sudoku))]:
-                    var = toVar(digit,row,column,sudoku)
-                    disjun = "-"+str(var) + " "
-                    for i in range(0,len(sudoku)):
-                        if i != column:
-                            var = toVar(digit,row,i,sudoku)
-                            expresion = expresion + disjun + "-"+str(var)+ " 0 "
-                            nConjunctions = nConjunctions + 1    
-                expresion = expresion + "\n"  
+            for digit in ALPHABET[:(len(sudoku))]:
+                var = toVar(digit,row,column,sudoku)
+                disjun = "-"+str(var) + " "
+                for i in range(0,len(sudoku)):
+                    if i != column:
+                        var = toVar(digit,row,i,sudoku)
+                        expresion = expresion + disjun + "-"+str(var)+ " 0 "
+                        nConjunctions = nConjunctions + 1    
+            expresion = expresion + "\n"  
             column = column + 1
         row = row + 1
     #expresion = expresion + "\n"
@@ -96,16 +94,15 @@ def columnVerification(sudoku):
     for line in sudoku:
         column = 0
         for elem in line:
-            if elem == "0":
-                for digit in ALPHABET[:(len(sudoku))]:
-                    var = toVar(digit,row,column,sudoku)
-                    disjun = "-"+str(var) + " "
-                    for i in range(0,len(sudoku)):
-                        if i != row:
-                            var = toVar(digit,i,column,sudoku)
-                            expresion = expresion + disjun + "-"+str(var)+ " 0 "
-                            nConjunctions = nConjunctions + 1    
-                expresion = expresion + "\n"  
+            for digit in ALPHABET[:(len(sudoku))]:
+                var = toVar(digit,row,column,sudoku)
+                disjun = "-"+str(var) + " "
+                for i in range(0,len(sudoku)):
+                    if i != row:
+                        var = toVar(digit,i,column,sudoku)
+                        expresion = expresion + disjun + "-"+str(var)+ " 0 "
+                        nConjunctions = nConjunctions + 1    
+            expresion = expresion + "\n"  
             column = column + 1
         row = row + 1
     #expresion = expresion + "\n"
@@ -122,23 +119,22 @@ def squareVerification(sudoku):
     for line in sudoku:
         column = 0
         for elem in line:
-            if elem == "0":
-                squareRow= row//squareLen
-                #print("squareRow "+str(squareRow))
-                squareColumn = column//squareLen
-                #print("squareColumn "+str(squareColumn))
-                for digit in ALPHABET[:(len(sudoku))]:
-                    var = toVar(digit,row,column,sudoku)
-                    disjun = "-"+str(var) + " "
-                    for i in range(squareRow*squareLen,squareRow*squareLen+squareLen):
-                        for j in range(squareColumn*squareLen,squareColumn*squareLen+squareLen):
-                            #print("Mi i y j "+str(i)+", "+str(j))
-                            if i != row or j !=column:
-                                #print("Mi i y j distinto a en donde estoy"+str(i)+", "+str(j))
-                                var = toVar(digit,i,j,sudoku)
-                                expresion = expresion + disjun + "-"+str(var)+ " 0 "
-                                nConjunctions = nConjunctions + 1    
-                expresion = expresion + "\n"  
+            squareRow= row//squareLen
+            #print("squareRow "+str(squareRow))
+            squareColumn = column//squareLen
+            #print("squareColumn "+str(squareColumn))
+            for digit in ALPHABET[:(len(sudoku))]:
+                var = toVar(digit,row,column,sudoku)
+                disjun = "-"+str(var) + " "
+                for i in range(squareRow*squareLen,squareRow*squareLen+squareLen):
+                    for j in range(squareColumn*squareLen,squareColumn*squareLen+squareLen):
+                        #print("Mi i y j "+str(i)+", "+str(j))
+                        if i != row or j !=column:
+                            #print("Mi i y j distinto a en donde estoy"+str(i)+", "+str(j))
+                            var = toVar(digit,i,j,sudoku)
+                            expresion = expresion + disjun + "-"+str(var)+ " 0 "
+                            nConjunctions = nConjunctions + 1    
+            expresion = expresion + "\n"  
             column = column + 1
         row = row + 1
     #expresion = expresion + "\n"
@@ -197,7 +193,7 @@ def main():
     global nTable
     #Leo archivo de entrada de un txt
     filepath = 'inputs/input1.txt'
-    if len(argv) > 0:
+    if len(argv) > 1:
         filepath = argv[1]
     SudokuToSat(filepath)
     
