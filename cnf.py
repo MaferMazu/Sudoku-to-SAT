@@ -1,5 +1,6 @@
 import re
 
+<<<<<<< Updated upstream
 def new_true(estado, n):
     estado[n] = True
     return estado
@@ -15,6 +16,20 @@ def SAT(clausulas):
     #root = Nodo(estado,clausulas)
     #root = Nodo(estado,clausulas)
     #root.search_valid_state()
+=======
+def SAT(estados):
+    cl = []
+    state = [x for x in mapeo_boolean.values()]
+    for e in estados:
+        for i in range(len(e)):
+            cl.append(re.split(" ",e[i]))
+    print(cl)
+    #print(state)
+    
+    root = Nodo(state, cl)
+    root.search_valid_state()
+    print(root.estado)
+>>>>>>> Stashed changes
 
 #############################################################
 # CLASE NODO
@@ -258,7 +273,11 @@ def main():
     global mapeo_column  # columna
     global mapeo_fila  # fila
     global mapeo_boolean # Valor Booleano Asignado
+<<<<<<< Updated upstream
     archivo = open("outputs/output.txt", "r")
+=======
+    archivo = open("output.txt", "r")
+>>>>>>> Stashed changes
     file_array = archivo.readlines()
     archivo.close()
 
