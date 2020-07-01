@@ -10,7 +10,7 @@ def new_false(estado, n):
 
 def SAT(clausulas):
     estado = [x for x in mapeo_boolean.values()]  
-    #print(clausulas)
+    print(clausulas)
     #print(estado)
     #root = Nodo(estado,clausulas)
     #root = Nodo(estado,clausulas)
@@ -25,7 +25,6 @@ class Nodo:
         self.clausula = clausula
         self.siguiente = []
         
-    
     def search_valid_state(self):
         if (self.tiene_None()):
             # Inicializo las nuevas Ramas
@@ -45,7 +44,8 @@ class Nodo:
             sol = []
             for i in self.siguiente:
                 i.search_valid_state()
-        else:                  
+        else:
+            
             self.verify_clausule()
     
         
@@ -248,8 +248,7 @@ def get_clausules(clausulas, n_clausulas):
 #                posicion.append(i)
 #        var_clausule_position.append(posicion)
 #    print(var_clausule_position)
-
-
+        
         
 #########################################################
 def main():
@@ -293,7 +292,7 @@ def main():
     disj = []
     count = 1
     unit_clausules = [[] for j in range(n**4)]
-    print(unit_clausules)
+    #print(unit_clausules)
     
     for linea in file_array:
 
@@ -320,25 +319,33 @@ def main():
             if rest == 0:
                 unit_clausules[(n**4)-1]=disjunciones
             else:
-                unit_clausules[rest-1]=disjunciones
+                  unit_clausules[rest-1]=disjunciones
         count = count + 1
-    print(unit_clausules)
+    #print(unit_clausules)
 
     
         
 ###########################################################
     clausula = []
-    for e in disj:
+    for e in unit_clausules:
+        group = []
         for i in range(len(e)):
-            clausula.append(re.split(" ",e[i]))            
-    int_clausulas = get_clausules(clausula, len(clausula))
+            group.append(re.split(" ",e[i]))
+            group = get_clausules(group, len(group))
+        clausula.append(group)
+            
+    print(len(clausula))       
+    #int_clausulas = get_clausules(clausula, len(clausula))
     
-    sol = SAT(int_clausulas)
+    sol = SAT(clausula)
 ###########################################################    
     
 if __name__ == "__main__":
     main()
 
 #########################################################
+
+
+
 
 
