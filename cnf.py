@@ -12,9 +12,8 @@ def SAT(clausulas):
     estado = [x for x in mapeo_boolean.values()]  
     print(clausulas)
     #print(estado)
-    #root = Nodo(estado,clausulas)
-    #root = Nodo(estado,clausulas)
-    #root.search_valid_state()
+    root = Nodo(estado,clausulas)
+    root.search_valid_state()
 
 #############################################################
 # CLASE NODO
