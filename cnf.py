@@ -10,8 +10,8 @@ def new_false(estado, n):
 
 def SAT(clausulas):
     estado = [x for x in mapeo_boolean.values()]  
-    #print(clausulas)
-    print(estado)
+    print(clausulas)
+    #print(estado)
     #root = Nodo(estado,clausulas)
     #root = Nodo(estado,clausulas)
     #root.search_valid_state()
@@ -290,19 +290,54 @@ def main():
     print("")
     
     disj = []
+    count = 1
+    unit_clausules = [[] for j in range(n**4)]
+    #print(unit_clausules)
     
     for linea in file_array:
+
         disjunciones = re.split(" 0 ", linea)
         disjunciones.pop()
         disj.append(disjunciones)
+
+    firstCicle=True
+    for linea in file_array[1:]:
+        #print(linea)
+        if firstCicle and count > n**4:
+            firstCicle = False
+        rest = count%(n**4)
+        #print(count,rest)
+        disjunciones = re.split(" 0 ", linea)
+        #print(disjunciones)
+        disjunciones.pop()
+        if not firstCicle:
+            if rest ==0:
+                unit_clausules[(n**4)-1] = unit_clausules[(n**4)-1] + disjunciones
+            else:
+                unit_clausules[rest-1]=unit_clausules[rest-1]+disjunciones
+        else:
+            if rest == 0:
+                unit_clausules[(n**4)-1]=disjunciones
+            else:
+                  unit_clausules[rest-1]=disjunciones
+        count = count + 1
+    #print(unit_clausules)
+
+    
+        
 ###########################################################
     clausula = []
-    for e in disj:
+    for e in unit_clausules:
+        group = []
         for i in range(len(e)):
-            clausula.append(re.split(" ",e[i]))            
-    int_clausulas = get_clausules(clausula, len(clausula))
+            group.append(re.split(" ",e[i]))
+            group = get_clausules(group, len(group))
+        clausula.append(group)
+            
+    print(len(clausula))       
+    #int_clausulas = get_clausules(clausula, len(clausula))
     
-#    sol = SAT(int_clausulas)
+    sol = SAT(clausula)
 ###########################################################    
     
 if __name__ == "__main__":
