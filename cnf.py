@@ -258,7 +258,7 @@ def main():
     global mapeo_column  # columna
     global mapeo_fila  # fila
     global mapeo_boolean # Valor Booleano Asignado
-    archivo = open("cnf.txt", "r")
+    archivo = open("outputs/output.txt", "r")
     file_array = archivo.readlines()
     archivo.close()
 
