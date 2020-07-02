@@ -1,87 +1,13 @@
 import re
 
 def new_true(estado, n):
-    estado[n] = True
+    estado[str(n)] = True
     return estado
 
 def new_false(estado, n):
-    estado[n] = False
+    estado[str(n)] = False
     return estado
 
-def SAT(clausulas):
-    estado = [x for x in mapeo_boolean.values()]  
-    print(clausulas)
-    #print(estado)
-    root = Nodo(estado,clausulas)
-    root.search_valid_state()
-
-#############################################################
-# CLASE NODO
-#############################################################
-class Nodo:
-    def __init__(self, state, clausula):
-        self.estado=state
-        self.clausula = clausula
-        self.siguiente = []
-        
-    def search_valid_state(self):
-        if (self.tiene_None()):
-            # Inicializo las nuevas Ramas
-            p = self.estado.index(None)
-
-            s1 = self.estado.copy()
-            s2 = self.estado.copy()
-            #print(self.estado)
-            print("++++++++++++++++++++++++++++++++++++++++++++")
-            rama_true = Nodo(new_true(s1, p),self.clausula)
-            rama_false = Nodo(new_false(s2, p),self.clausula)
-            
-            self.siguiente.append(rama_true)
-            self.siguiente.append(rama_false)
-            
-            # Busco en cada una de las Ramas
-            sol = []
-            for i in self.siguiente:
-                i.search_valid_state()
-        else:
-            
-            self.verify_clausule()
-    
-        
-    def verify_clausule(self):
-        sol = True
-        for c in self.clausula:
-            eval_true = False
-            for v in c:
-                #print("value:", end=" ")
-                #print(v)
-                #print(self.estado[abs(v)-1])
-                if(v<0):
-                    eval_true = eval_true or (not self.estado[abs(v)-1])
-                else:
-                    eval_true = eval_true or (self.estado[abs(v)-1])
-            if(not eval_true):
-                #print(self.estado)
-                #print(c, end=" ")
-                #print(v)
-                sol = False
-                break
-        
-        if(sol):
-            print("##################################")
-            print("UNA SOLUCION ES:")
-            print(self.estado)
-            print("##################################")
-        
-        
-    def tiene_None(self):
-        existe_none = False
-        for e in self.estado:
-            if(e == None):
-                existe_none = True
-                break
-        return existe_none
-                
 ###########################################                
 def new_list(suc,nivel,pos):
     v = []
@@ -241,14 +167,89 @@ def get_clausules(clausulas, n_clausulas):
     var_clausule_position = []
     for i in range(len(clausulas)):
         p = [int(x) for x in clausulas[i]]
-        #print(p)
+
         clausulas[i] = p
     return clausulas
-#                posicion.append(i)
-#        var_clausule_position.append(posicion)
-#    print(var_clausule_position)
+#########################################
+# 
+def SAT(clausulas, estados): 
+    root = Nodo(clausulas,estados)
+    root.search_valid_state()
+
+#############################################################
+# CLASE NODO
+#############################################################
+class Nodo:
+    def __init__(self, clausula, estados):
+        self.estados=estados
+        self.clausula = clausula
         
+    def tiene_None(self, estado):
+        existe_none = False
+        est = 0
+        #print(estado)
+        for e in estado.keys():
+            if(estado[e] == None):
+                existe_none = True
+                est = e
+                break
+        return est, existe_none
+    
+    def search_valid_state(self):
+        solucion = []
+        sol = []
+        #INICIALIZAMOS LA BUSQUEDA CON EL PRIMER CONJUNTO
+        # DE CLAUSULAS
+#        for i in range(len(self.clausula)):
+#        print(self.estados[0])
+        pos, existe = self.tiene_None(self.estados[0])
+        if (existe):
+            # Inicializo las nuevas Ramas
+            s1 = self.estados[0].copy()
+            #print(s1)
+            s2 = self.estados[0].copy()
+            #print("++++++++++++++++++++++++++++++++++++++++++++")
+            rama_true = Nodo(self.clausula[0],new_true(s1, pos))
+            rama_false = Nodo(self.clausula[0],new_false(s2, pos))
+            
+            sol.append(busqueda(rama_true))
+            solucion.append(sol)
+            print("SOLUCION PRIMERA CLAUSULA")
+            print(sol)
+            print(len(solucion))
+                
+def busqueda(bloque):
+   
+    key, existe = bloque.tiene_None(bloque.estados)
+    sol = []
+    if (existe):
+        s1 = bloque.estados.copy()
+        rama_true = Nodo(bloque.clausula,new_true(s1, key))
+        sol.append(busqueda(rama_true))
+        s2 = bloque.estados.copy()
+        rama_false = Nodo(bloque.clausula,new_false(s1, key))
+        sol.append(busqueda(rama_false)) 
+    else:
+        aux = False
         
+        for c in bloque.clausula:
+            #print (c)
+            for elem in c:
+                #print(elem)
+                if (elem < 0):
+                    #rint("negativo")
+                    aux = aux or (not bloque.estados[str(elem)])
+                else:
+                    #print("positivo")
+                    #print(bloque.estados[str(elem)])
+                    aux = aux or bloque.estados[str(elem)]
+        print(aux)
+        if(aux):
+            print(bloque.estados)
+            return bloque.estados
+        else:
+            return
+
 #########################################################
 def main():
     #MAIN
@@ -257,7 +258,7 @@ def main():
     global mapeo_column  # columna
     global mapeo_fila  # fila
     global mapeo_boolean # Valor Booleano Asignado
-    archivo = open("outputs/output.txt", "r")
+    archivo = open("output.txt", "r")
     file_array = archivo.readlines()
     archivo.close()
 
@@ -272,26 +273,10 @@ def main():
     mapeo_valor = values_association(n)   # Celda
 
     mapeo_boolean = boolean_association(n,fijos) # Valor Booleano Asignado
-    print("Posicion")
-    print(mapeo_posicion)
-    print("")
-    print("Valor")
-    print(mapeo_valor)
-    print("")
-    print("Columna")
-    print(mapeo_column)
-    print("")
-    print("Fila")
-    print(mapeo_fila)
-    print("")
-    print("Estado Inicial Booleanos")
-    print(mapeo_boolean)
-    print("")
-    
+
     disj = []
     count = 1
     unit_clausules = [[] for j in range(n**4)]
-    #print(unit_clausules)
     
     for linea in file_array:
 
@@ -301,13 +286,11 @@ def main():
 
     firstCicle=True
     for linea in file_array[1:]:
-        #print(linea)
+
         if firstCicle and count > n**4:
             firstCicle = False
         rest = count%(n**4)
-        #print(count,rest)
         disjunciones = re.split(" 0 ", linea)
-        #print(disjunciones)
         disjunciones.pop()
         if not firstCicle:
             if rest ==0:
@@ -320,11 +303,12 @@ def main():
             else:
                   unit_clausules[rest-1]=disjunciones
         count = count + 1
-    #print(unit_clausules)
 
     
         
 ###########################################################
+    # SE AGRUPAN LAS CLAUSULAS EN GRUPOS RESPECTIVOS A
+    #CLAUSULA POR CELDAS
     clausula = []
     for e in unit_clausules:
         group = []
@@ -333,18 +317,20 @@ def main():
             group = get_clausules(group, len(group))
         clausula.append(group)
             
-    print(len(clausula))       
-    #int_clausulas = get_clausules(clausula, len(clausula))
+    # SE OBTIENE LOS ESTADOS DE CASA SUBCLAUSULA     
+    estados = []
+    for e in clausula:
+        cl = {}
+        for x in e:
+            for j in x:
+                cl[str(abs(j))] = mapeo_boolean[str(abs(j))]
+        estados.append(cl)
     
-    sol = SAT(clausula)
+    sol = SAT(clausula, estados)
 ###########################################################    
     
 if __name__ == "__main__":
     main()
-
-#########################################################
-
-
 
 
 
