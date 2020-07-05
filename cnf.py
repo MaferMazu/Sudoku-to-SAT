@@ -198,57 +198,76 @@ class Nodo:
     def search_valid_state(self):
         solucion = []
         sol = []
-        #INICIALIZAMOS LA BUSQUEDA CON EL PRIMER CONJUNTO
-        # DE CLAUSULAS
-#        for i in range(len(self.clausula)):
-#        print(self.estados[0])
-        pos, existe = self.tiene_None(self.estados[0])
+        counter = 0
+
+        pos, existe = self.tiene_None(self.estados[counter])
         if (existe):
             # Inicializo las nuevas Ramas
-            s1 = self.estados[0].copy()
+            s1 = self.estados[counter].copy()
             #print(s1)
-            s2 = self.estados[0].copy()
+            s2 = self.estados[counter].copy()
             #print("++++++++++++++++++++++++++++++++++++++++++++")
-            rama_true = Nodo(self.clausula[0],new_true(s1, pos))
+            rama_true = Nodo(self.clausula[counter],new_true(s1, pos))
             rama_false = Nodo(self.clausula[0],new_false(s2, pos))
             
-            sol.append(busqueda(rama_true))
-            solucion.append(sol)
-            print("SOLUCION PRIMERA CLAUSULA")
+            sol = busqueda(rama_true)+ busqueda(rama_false)
+            #print(len(sol))
             print(sol)
-            print(len(solucion))
+            print("++++++++++++++++++++++++++++++++++++++++++++")
+            counter=counter+1
+            soluciones_iter = []
+            for e in sol:
+                estado_auxiliar = self.estados[counter].copy()
+                print(estado_auxiliar)
+                estado_auxiliar.update(e)
+                print(estado_auxiliar)
+                print("----------------------------------------------------")
+                parar = True
+                while counter < len(self.clausula):
+                    print(counter)
+                    pos, existe = self.tiene_None(self.estados[counter])
+                    if (existe):
+                        ramaTrue = Nodo(self.clausula[counter],new_true(estado_auxiliar, pos))
+                        s_auxiliar = busqueda(ramaTrue)
+                        print("SOLUCION SEGUNDA CLAUSULA CASO TRUE")
+                        print(s_auxiliar)
+                        print(len(s_auxiliar))
+                    else:
+                        ramaTrue = Nodo(self.clausula[counter],estado_auxiliar)
+                        s_auxiliar = busqueda(ramaTrue)
+                        print("SOLUCION SEGUNDA CLAUSULA CASO FALSE")
+                        print(s_auxiliar)
+                    counter = counter+1        
                 
 def busqueda(bloque):
    
     key, existe = bloque.tiene_None(bloque.estados)
-    sol = []
+    sol1 = []
+    sol2 = []
     if (existe):
         s1 = bloque.estados.copy()
         rama_true = Nodo(bloque.clausula,new_true(s1, key))
-        sol.append(busqueda(rama_true))
         s2 = bloque.estados.copy()
         rama_false = Nodo(bloque.clausula,new_false(s1, key))
-        sol.append(busqueda(rama_false)) 
+
+        return sol1 + busqueda(rama_true) + busqueda(rama_false)
+
     else:
-        aux = False
-        
+        aux = False        
         for c in bloque.clausula:
-            #print (c)
             for elem in c:
-                #print(elem)
                 if (elem < 0):
-                    #rint("negativo")
                     aux = aux or (not bloque.estados[str(elem)])
                 else:
-                    #print("positivo")
-                    #print(bloque.estados[str(elem)])
                     aux = aux or bloque.estados[str(elem)]
-        print(aux)
+        #print(aux)
         if(aux):
-            print(bloque.estados)
-            return bloque.estados
+            #print(bloque.estados)
+            sol1.append( bloque.estados)
+            #print(sol1)
+            return sol1
         else:
-            return
+            return sol2
 
 #########################################################
 def main():
@@ -331,6 +350,4 @@ def main():
     
 if __name__ == "__main__":
     main()
-
-
 
