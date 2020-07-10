@@ -272,30 +272,25 @@ class Nodo:
                 break
         return est, existe_none
     
-    def search_valid_state(self):
+     def search_valid_state(self):
         solucion = []
-        sol = []
-
-        pos, existe = self.tiene_None(self.estados[0])
-        if (existe):
-            # Inicializo las nuevas Ramas
-            s1 = self.estados[0].copy()
-            s2 = self.estados[0].copy()
-            #print("++++++++++++++++++++++++++++++++++++++++++++")
-            rama_true = Nodo(self.clausula[0],new_true(s1, pos))
-            rama_false = Nodo(self.clausula[0],new_false(s2, pos))
-            
-            sol = busqueda(rama_true)+ busqueda(rama_false)
-            contador = 1
-            for e in sol:
-                index, exist = self.tiene_None(self.estados[contador])
-                if (existe):
-                    s = self.estados[contador].copy()
-                    ramaTrue = Nodo(self.clausula[contador],new_true(s, pos))
-                    ramaFalse = Nodo(self.clausula[contador],new_false(s, pos))
-                    nuevos_estados =  busqueda(rama_true)+ busqueda(rama_false)
-                    soluciones.append(recorrer_clausulas(e, nuevos_estados,contador))
-                contador = contador+1
+        contador = 0
+        for c in self.clausula:
+            sol = []
+            pos, existe = self.tiene_None(self.estados[contador])
+            if (existe):
+                # Inicializo las nuevas Ramas
+                s1 = self.estados[contador].copy()
+                s2 = self.estados[contador].copy()
+                #print("++++++++++++++++++++++++++++++++++++++++++++")
+                rama_true = Nodo(self.clausula[contador],new_true(s1, pos))
+                rama_false = Nodo(self.clausula[contador],new_false(s2, pos))
+                sol = busqueda(rama_true)+busqueda(rama_false)
+                print(sol)
+                print("\n")
+                solucion.append(sol)
+            contador = contador+1
+        print(solucion)
                 
 def busqueda(bloque):
    
