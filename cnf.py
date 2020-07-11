@@ -1,13 +1,5 @@
 import re
 
-def new_true(estado, n):
-    estado[str(n)] = True
-    return estado
-
-def new_false(estado, n):
-    estado[str(n)] = False
-    return estado
-
 ###########################################                
 def new_list(suc,nivel,pos):
     v = []
@@ -162,7 +154,6 @@ def getTable(file_array):
 #This will be used to compare more easly the clausules
 
 
-
 def get_clausules(clausulas, n_clausulas):
     var_clausule_position = []
     for i in range(len(clausulas)):
@@ -170,11 +161,7 @@ def get_clausules(clausulas, n_clausulas):
 
         clausulas[i] = p
     return clausulas
-#########################################
-# 
-def SAT(clausulas, estados):
-    root = Nodo(clausulas,estados)
-    #root.search_valid_state()
+
 ###########################################
 # REDUCCION DE CLAUSULAS
 ###########################################
@@ -184,12 +171,29 @@ def SAT(clausulas, estados):
 def propagacion_unitaria(clausulas):
     for c in clausulas:
         for lista in c:
+            #ASIGNACION DE UNICIDAD POR CLAUSULA
             if (len(lista)==2):
                 v1 = mapeo_boolean[str(abs(lista[0]))]
                 v2 = mapeo_boolean[str(abs(lista[1]))]
 
                 if ((v1==None) ^ (v2==None)):
-                    assigSecondVariable(lista)           
+                    assigSecondVariable(lista)
+                    
+            #ASIGNACION DE UNICIDAD POR CASILLAS        
+            if(len(lista)>2):
+                var_asignada = hayTrue(lista)
+                if(var_asignada!=None):
+                    for elem in lista:
+                        if(elem != var_asignada):
+                            mapeo_boolean[str(abs(elem))] = False
+#--------------------------------------------------------------
+def hayTrue(clausula):
+    v = None
+    for var in clausula:
+        if(mapeo_boolean[str(abs(var))]==True):
+            v = var
+            break
+    return v
 #--------------------------------------------------------------
 # Input: Se recibe una clausula de dos variables con una sola
 # ya asignada.
@@ -253,79 +257,134 @@ def limpiar_clausulas(clausula):
             clausula[i].pop(index)
     #print("DESPUES")
     #print(clausula[2])
-#############################################################
-# CLASE NODO
-#############################################################
-class Nodo:
-    def __init__(self, clausula, estados):
-        self.estados=estados
-        self.clausula = clausula
-        
-    def tiene_None(self, estado):
-        existe_none = False
-        est = 0
-        #print(estado)
-        for e in estado.keys():
-            if(estado[e] == None):
-                existe_none = True
-                est = e
-                break
-        return est, existe_none
-    
-     def search_valid_state(self):
-        solucion = []
-        contador = 0
-        for c in self.clausula:
-            sol = []
-            pos, existe = self.tiene_None(self.estados[contador])
-            if (existe):
-                # Inicializo las nuevas Ramas
-                s1 = self.estados[contador].copy()
-                s2 = self.estados[contador].copy()
-                #print("++++++++++++++++++++++++++++++++++++++++++++")
-                rama_true = Nodo(self.clausula[contador],new_true(s1, pos))
-                rama_false = Nodo(self.clausula[contador],new_false(s2, pos))
-                sol = busqueda(rama_true)+busqueda(rama_false)
-                print(sol)
-                print("\n")
-                solucion.append(sol)
-            contador = contador+1
-        print(solucion)
-                
-def busqueda(bloque):
-   
-    key, existe = bloque.tiene_None(bloque.estados)
-    sol1 = []
-    sol2 = []
-    if (existe):
-        s1 = bloque.estados.copy()
-        rama_true = Nodo(bloque.clausula,new_true(s1, key))
-        s2 = bloque.estados.copy()
-        rama_false = Nodo(bloque.clausula,new_false(s1, key))
-
-        return sol1 + busqueda(rama_true) + busqueda(rama_false)
-
+#-----------------------------------------------------------------
+def get_nones(clave):
+    if (mapeo_boolean[clave]==None):
+        return [int(clave)]
     else:
-        aux = False        
-        for c in bloque.clausula:
-            for elem in c:
-                #print(c)
-                if (elem < 0):
-                    aux = aux or (not bloque.estados[str(elem)])
-                else:
-                    #print(c)
-                    #print("**********************************\n")
-                    #print(bloque.estados)
-                    aux = aux or bloque.estados[str(elem)]
-        #print(aux)
-        if(aux):
-            #print(bloque.estados)
-            sol1.append( bloque.estados)
-            #print(sol1)
-            return sol1
-        else:
-            return sol2
+        return []
+#-----------------------------------------------------------------
+def clausule_association(var,clausulas):
+    tam = len(clausulas)
+    asociaciones = []
+    for v in var:
+        aparecio = False
+        clausula_por_variable = []
+        for cl in clausulas:
+            for c in cl:
+                if ((v in c) or (-v in c)):
+                    aparecio = True
+                    clausula_por_variable.append(c)
+        if(aparecio):
+            asociaciones.append(clausula_por_variable)
+    return asociaciones
+#############################################################
+# FUNCIONES EXTERNAS PARA EL BACKTRACKING
+#############################################################
+def new_true(estado, n):
+    estado[str(n)] = True
+    return estado
 
+def new_false(estado, n):
+    estado[str(n)] = False
+    return estado
+
+#############################################################
+# INVOCACION DEL BACKTRACKING
+#############################################################
+def SAT2(no_asignados, clausulas):
+    root = Nodo2(no_asignados, clausulas)
+    sol = root.search_valid_states(True)
+    print("SOLUCION:")
+    print(sol)
+    print("")
+    print("BOOLEANOS:")
+    print(mapeo_boolean)
+    print("")
+    print("CELDA:")
+    print(mapeo_valor)
+    print("")
+    print("NUMERO:")
+    print(mapeo_posicion)
+    print("")
+    print("COLUMNA:")
+    print(mapeo_column)
+    print("")
+    print("FILA:")
+    print(mapeo_fila)
+ 
+#############################################################
+# CLASE NODO2
+#############################################################
+class Nodo2:
+    def __init__(self, variables, clausulas):
+        self.variables= variables
+        self.clausulas = clausulas
+        
+    def tiene_none(self,clausula):
+        existe_none = False
+        val =-1
+        #print(estado)
+        for c in clausula:
+            if(mapeo_boolean[str(abs(c))] == None):
+                existe_none = True
+                val=c
+                break
+        return val, existe_none
+    
+    def evalua_true(clausula):
+        aux = False        
+        for c in clausula:
+            if (c < 0):
+                aux = aux or (not mapeo_boolean[str(abs(c))])
+            else:
+                aux = aux or mapeo_boolean[str(c)]
+                
+        return aux
+    # LA BUSQUEDA SIEMPRE SE INICIA CON TRUE
+    #EN CASO DE NO SATISFACER UNA CLAUSULA SE ESTUDIA EL CASO FALSE
+    def search_valid_states(self,caso):
+        #mapeo_boolean[str(self.variables[index])] = case
+        #aux = self.variables.copy()
+        #var = aux.pop(0)
+        index=0
+        hay_solucion=True
+        while index<len(self.clausulas):
+            if (not self.buscar(caso, index)):
+                hay_solucion =False
+                break
+            index=index+1
+            #print("SALE")
+        return hay_solucion
+    
+    def buscar(self,case,index):
+        mapeo_boolean[str(self.variables[index])] = case
+        #print(index)
+        for c in self.clausulas[index]:
+            # ATIENDE LOS CASOS SI O NO DE NONE!
+            var_con_none, existeN = self.tiene_none(c)
+            if(not existeN):
+                #print("ENTRO")
+                break
+                if(not evalua_true(c)):
+                    if(case):
+                        return (True and self.buscar(False,index))
+                    else:
+                        return False
+            else:
+                i = self.variables.index(abs(var_con_none))
+                if(self.buscar(True,i)):
+                    continue
+                else:
+                    if(self.buscar(False,i)):
+                        continue
+                    else:
+                        if(case):
+                            return (True and self.buscar(False,index))
+                        else:
+                            return False
+        return True            
+                    
 #########################################################
 def main():
     #MAIN
@@ -339,15 +398,16 @@ def main():
     archivo.close()
 
     file_array, n, dimension, n_clausulas = getTable(file_array)
-    asignados = re.split(" 0 ", file_array[0])
+    asignados = re.split(" 0", file_array[0])
     asignados.pop()
     fijos = [int(x) for x in asignados]
-    
+    #print("ASIGNADOS")
+    #print(asignados)
+    #print("")
     mapeo_posicion = cells_association(n) # Numero
     mapeo_column = col_association(n) # Columna
     mapeo_fila = row_association(n)   # Fila
     mapeo_valor = values_association(n)   # Celda
-
     mapeo_boolean = boolean_association(n,fijos) # Valor Booleano Asignado
 
     disj = []
@@ -397,6 +457,17 @@ def main():
     propagacion_unitaria(clausula)
     # SE ELIMINAN LAS CLAUSULAS CUYAS VARIABLES ESTEN ASIGNADAS
     limpiar_clausulas(clausula)
+    
+    #SE CREA UN ARREGLO DE LAS VARIABLES NO ASIGNADAS
+    
+    no_asignados = []
+    for k in mapeo_boolean.keys():
+        no_asignados = no_asignados+get_nones(k)
+        
+    # AGRUPACION DE CLAUSULAS POR VARIABLE NO ASIGNADA
+    agrupacion = clausule_association(no_asignados,clausula)
+    
+    print(no_asignados)
 
     # SE OBTIENE LOS ESTADOS DE LA CLAUSULA RESULTANTE    
     estados = []
@@ -406,10 +477,9 @@ def main():
             for j in x:
                 cl[str(abs(j))] = mapeo_boolean[str(abs(j))]
         estados.append(cl)
-    
-    #sol = SAT(clausula, estados)
+        
+    #sol = SAT2(no_asignados,agrupacion)
 ###########################################################    
     
 if __name__ == "__main__":
     main()
-
