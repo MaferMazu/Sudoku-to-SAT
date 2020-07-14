@@ -1,21 +1,15 @@
 import re
 
 ###########################################                
-def new_list(suc,nivel,pos):
+def solution():
     v = []
-    cont = 0
-    for i in suc:
-        if (cont != pos):
-            node = Nodo(i.current_value,nivel)
-            v.append(node)
-        cont=cont+1
+    for k in mapeo_boolean.keys():
+        if (mapeo_boolean[k]):
+            v.append(k)
     return v
-
-
 ######################################################
 # cells_asociation: Map the set of values to their
 # respective Sudoku Cell
-
 
 def cells_association(n):
     diccionario = {}
@@ -158,7 +152,6 @@ def get_clausules(clausulas, n_clausulas):
     var_clausule_position = []
     for i in range(len(clausulas)):
         p = [int(x) for x in clausulas[i]]
-
         clausulas[i] = p
     return clausulas
 
@@ -185,7 +178,7 @@ def propagacion_unitaria(clausulas):
                 if(var_asignada!=None):
                     for elem in lista:
                         if(elem != var_asignada):
-                            mapeo_boolean[str(abs(elem))] = False
+                            mapeo_boolean[str(abs(elem))] = False 
 #--------------------------------------------------------------
 def hayTrue(clausula):
     v = None
@@ -296,22 +289,8 @@ def SAT2(no_asignados, clausulas):
     root = Nodo2(no_asignados, clausulas)
     sol = root.search_valid_states(True)
     print("SOLUCION:")
-    print(sol)
-    print("")
-    print("BOOLEANOS:")
     print(mapeo_boolean)
-    print("")
-    print("CELDA:")
-    print(mapeo_valor)
-    print("")
-    print("NUMERO:")
-    print(mapeo_posicion)
-    print("")
-    print("COLUMNA:")
-    print(mapeo_column)
-    print("")
-    print("FILA:")
-    print(mapeo_fila)
+
  
 #############################################################
 # CLASE NODO2
@@ -332,7 +311,7 @@ class Nodo2:
                 break
         return val, existe_none
     
-    def evalua_true(clausula):
+    def evalua_true(self,clausula):
         aux = False        
         for c in clausula:
             if (c < 0):
@@ -354,32 +333,30 @@ class Nodo2:
                 hay_solucion =False
                 break
             index=index+1
-            #print("SALE")
         return hay_solucion
     
     def buscar(self,case,index):
         mapeo_boolean[str(self.variables[index])] = case
-        #print(index)
+        
         for c in self.clausulas[index]:
             # ATIENDE LOS CASOS SI O NO DE NONE!
             var_con_none, existeN = self.tiene_none(c)
             if(not existeN):
                 #print("ENTRO")
-                break
-                if(not evalua_true(c)):
+                if(not self.evalua_true(c)):
                     if(case):
-                        return (True and self.buscar(False,index))
+                        return (True and self.buscar(not case,index))
                     else:
                         return False
             else:
                 i = self.variables.index(abs(var_con_none))
-                if(self.buscar(True,i)):
+                if(self.buscar(not case,i)):
                     continue
                 else:
-                    if(self.buscar(False,i)):
+                    if(self.buscar(case,i)):
                         continue
                     else:
-                        if(case):
+                        if(case==True):
                             return (True and self.buscar(False,index))
                         else:
                             return False
@@ -393,7 +370,7 @@ def main():
     global mapeo_column  # columna
     global mapeo_fila  # fila
     global mapeo_boolean # Valor Booleano Asignado
-    archivo = open("output.txt", "r")
+    archivo = open("output2.txt", "r")
     file_array = archivo.readlines()
     archivo.close()
 
@@ -417,7 +394,8 @@ def main():
     for linea in file_array:
 
         disjunciones = re.split(" 0 ", linea)
-        disjunciones.pop()
+        if(disjunciones[len(disjunciones)-1]=="\n"):
+            disjunciones.pop()
         disj.append(disjunciones)
 
     firstCicle=True
@@ -427,7 +405,8 @@ def main():
             firstCicle = False
         rest = count%(n**4)
         disjunciones = re.split(" 0 ", linea)
-        disjunciones.pop()
+        if(disjunciones[len(disjunciones)-1]=="\n"):
+            disjunciones.pop()
         if not firstCicle:
             if rest ==0:
                 unit_clausules[(n**4)-1] = unit_clausules[(n**4)-1] + disjunciones
@@ -440,9 +419,6 @@ def main():
                   unit_clausules[rest-1]=disjunciones
         count = count + 1
 
-    
-        
-###########################################################
     # SE AGRUPAN LAS CLAUSULAS EN GRUPOS RESPECTIVOS A
     #CLAUSULA POR CELDAS
     clausula = []
@@ -450,6 +426,8 @@ def main():
         group = []
         for i in range(len(e)):
             group.append(re.split(" ",e[i]))
+            if("\n" in group[len(group)-1]):
+                group[len(group)-1].pop()
             group = get_clausules(group, len(group))
         clausula.append(group)
     # SE PROCEDE A ASIGNAR LAS CLAUSULAS BINARIAS CON
@@ -459,7 +437,7 @@ def main():
     limpiar_clausulas(clausula)
     
     #SE CREA UN ARREGLO DE LAS VARIABLES NO ASIGNADAS
-    
+
     no_asignados = []
     for k in mapeo_boolean.keys():
         no_asignados = no_asignados+get_nones(k)
@@ -467,7 +445,7 @@ def main():
     # AGRUPACION DE CLAUSULAS POR VARIABLE NO ASIGNADA
     agrupacion = clausule_association(no_asignados,clausula)
     
-    print(no_asignados)
+    #print(no_asignados)
 
     # SE OBTIENE LOS ESTADOS DE LA CLAUSULA RESULTANTE    
     estados = []
@@ -478,7 +456,7 @@ def main():
                 cl[str(abs(j))] = mapeo_boolean[str(abs(j))]
         estados.append(cl)
         
-    #sol = SAT2(no_asignados,agrupacion)
+    sol = SAT2(no_asignados,agrupacion)
 ###########################################################    
     
 if __name__ == "__main__":
