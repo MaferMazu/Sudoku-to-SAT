@@ -179,25 +179,6 @@ def propagacion_unitaria(clausulas):
                     
             #ASIGNACION DE UNICIDAD POR CELDA: Si la celda ya esta asignada se ponen todos 
             #los valores faltantes en False
-            if(len(lista)>2):
-                print((clausulas[it1])[i])
-                
-                var_asignada = hayTrue(lista)
-                if(var_asignada!=None):
-                    for elem in lista:
-                        if(elem != var_asignada):
-                            mapeo_boolean[str(abs(elem))] = False
-                tam = 0
-                long =len(lista)-1
-            #ASIGNACION Y DESCARTE: se descartan variables ya asignadas, si el resultado
-            #tiene longitud 1 se asigna True (ASIGNACION POR DESCARTE)
-                for v in reversed(lista):
-                    if (mapeo_boolean[str(abs(v))] != None):
-                        lista.pop(long-tam)
-                    tam=tam+1
-                if (len(lista)==1):
-                    mapeo_boolean[str(abs(lista[0]))]=True
-                    lista.pop()
 #--------------------------------------------------------------
 def hayTrue(clausula):
     v = None
@@ -310,8 +291,6 @@ def SAT2(no_asignados, clausulas):
     solucion=solution()
     print(solucion)
     print(len(solucion))
-    
-
  
 #############################################################
 # CLASE NODO2
@@ -320,6 +299,7 @@ class Nodo2:
     def __init__(self, variables, clausulas):
         self.variables= variables
         self.clausulas = clausulas
+        self.reviciones = [0 for i in range(len(clausulas))]
         
     def tiene_none(self,clausula):
         existe_none = False
@@ -344,51 +324,38 @@ class Nodo2:
     # LA BUSQUEDA SIEMPRE SE INICIA CON TRUE
     #EN CASO DE NO SATISFACER UNA CLAUSULA SE ESTUDIA EL CASO FALSE
     def search_valid_states(self,caso):
-        #mapeo_boolean[str(self.variables[index])] = case
-        #aux = self.variables.copy()
-        #var = aux.pop(0)
+        
         index=0
         hay_solucion=True
         #Ciclo verdadero
-        while index<len(self.clausulas):
+        #while index<len(self.clausulas):
         #Ciclo Pruebas
-        #while index<1:
+        while index<1:
             if (not self.buscar(caso, index)):
                 hay_solucion =False
                 break
             index=index+1
-            print(mapeo_boolean)
-            print("")
+            
         return hay_solucion
     
     def buscar(self,case,index):
-        
+    
         mapeo_boolean[str(self.variables[index])] = case
-        #print("CASO: "+str(case)+" VARIABLE: "+str(self.variables[index]))
-        
-        for c in self.clausulas[index]:
-            #print()
-            #print("   CLAUSULA: "+str(c))
+        for c in self.clausulas[index]: 
             # ATIENDE LOS CASOS SI O NO DE NONE!
             var_con_none, existeN = self.tiene_none(c)
             if(not existeN):
-                #print("      ENTRO EN CASO NO EXISTEN NONE:")
                 if(not self.evalua_true(c)):
-                    #print("        No Evalua True")
                     if(case):
                         return (True and self.buscar(not case,index))
                     else:
                         return False
             else:
-                #print("      ENTRO EN CASO EXISTE NONE:")
                 i = self.variables.index(abs(var_con_none))
-                #print("        el NONE es :"+str(i))
                 if(self.buscar(not case,i)):
-                    #print("        HAY SOLUCION PARA FALSO")
                     continue
                 else:
                     if(self.buscar(case,i)):
-                        #print("        HAY SOLUCION PARA TRUE")
                         continue
                     else:
                         if(case==True):
@@ -405,7 +372,7 @@ def main():
     global mapeo_column  # columna
     global mapeo_fila  # fila
     global mapeo_boolean # Valor Booleano Asignado
-    archivo = open("output2.txt", "r")
+    archivo = open("output.txt", "r")
     file_array = archivo.readlines()
     archivo.close()
 
@@ -482,7 +449,7 @@ def main():
     # AGRUPACION DE CLAUSULAS POR VARIABLE NO ASIGNADA
     agrupacion = clausule_association(no_asignados,clausula)
     print(no_asignados)
-    print(len(no_asignados))
+    #print(len(no_asignados))
     print("")
     #print(mapeo_boolean)    
     sol = SAT2(no_asignados,agrupacion)
@@ -490,4 +457,3 @@ def main():
     
 if __name__ == "__main__":
     main()
-
