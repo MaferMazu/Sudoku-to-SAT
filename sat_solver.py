@@ -5,7 +5,7 @@ def solution():
     v = []
     for k in mapeo_boolean.keys():
         if (mapeo_boolean[k]):
-            v.append(k)
+            v.append(mapeo_valor[k])
     return v
 ######################################################
 # cells_asociation: Map the set of values to their
@@ -162,8 +162,13 @@ def get_clausules(clausulas, n_clausulas):
 # las clausulas de tamaño dos cuyas variables
 # solo satisfacen la clausula con un solo valor
 def propagacion_unitaria(clausulas):
+    it1 = -1
+    
     for c in clausulas:
+        it1=it1+1
+        i = -1
         for lista in c:
+            i=i+1
             #ASIGNACION DE UNICIDAD POR CLAUSULA
             if (len(lista)==2):
                 v1 = mapeo_boolean[str(abs(lista[0]))]
@@ -172,13 +177,25 @@ def propagacion_unitaria(clausulas):
                 if ((v1==None) ^ (v2==None)):
                     assigSecondVariable(lista)
                     
-            #ASIGNACION DE UNICIDAD POR CASILLAS        
+            #ASIGNACION DE UNICIDAD POR CELDA: Si la celda ya esta asignada se ponen todos 
+            #los valores faltantes en False
             if(len(lista)>2):
                 var_asignada = hayTrue(lista)
                 if(var_asignada!=None):
                     for elem in lista:
                         if(elem != var_asignada):
-                            mapeo_boolean[str(abs(elem))] = False 
+                            mapeo_boolean[str(abs(elem))] = False
+                tam = 0
+                long =len(lista)-1
+            #ASIGNACION Y DESCARTE: se descartan variables ya asignadas, si el resultado
+            #tiene longitud 1 se asigna True (ASIGNACION POR DESCARTE)
+                for v in reversed(lista):
+                    if (mapeo_boolean[str(abs(v))] != None):
+                        lista.pop(long-tam)
+                    tam=tam+1
+                if (len(lista)==1):
+                    mapeo_boolean[str(abs(lista[0]))]=True
+                    lista.pop()
 #--------------------------------------------------------------
 def hayTrue(clausula):
     v = None
@@ -288,8 +305,10 @@ def new_false(estado, n):
 def SAT2(no_asignados, clausulas):
     root = Nodo2(no_asignados, clausulas)
     sol = root.search_valid_states(True)
-    print("SOLUCION:")
-    print(mapeo_boolean)
+    solucion=solution()
+    print(solucion)
+    print(len(solucion))
+    
 
  
 #############################################################
@@ -328,32 +347,55 @@ class Nodo2:
         #var = aux.pop(0)
         index=0
         hay_solucion=True
-        while index<len(self.clausulas):
+        #Ciclo verdadero
+        #while index<len(self.clausulas):
+        #Ciclo Pruebas
+        while index<1:
+            print("ITERACION")
+            print(str(index))
             if (not self.buscar(caso, index)):
                 hay_solucion =False
                 break
             index=index+1
+            print(mapeo_boolean)
+            print("")
         return hay_solucion
     
     def buscar(self,case,index):
+        
         mapeo_boolean[str(self.variables[index])] = case
+        #print("CASO: "+str(case)+" VARIABLE: "+str(self.variables[index]))
         
         for c in self.clausulas[index]:
+            print()
+            print("   CLAUSULA: "+str(c))
+            print("CLAUSULAS:")
+            print(self.clausulas[index])
+            print("")
+            
             # ATIENDE LOS CASOS SI O NO DE NONE!
             var_con_none, existeN = self.tiene_none(c)
             if(not existeN):
-                #print("ENTRO")
+                print("      ENTRO EN CASO NO EXISTEN NONE:")
                 if(not self.evalua_true(c)):
+                    print("        No Evalua True")
+                    print(mapeo_boolean[str(abs(c[0]))])
+                    print(mapeo_boolean[str(abs(c[1]))])
+                    break
                     if(case):
-                        return (True and self.buscar(not case,index))
+                        return (True and self.buscar(False,index))
                     else:
                         return False
             else:
+                #print("      ENTRO EN CASO EXISTE NONE:")
                 i = self.variables.index(abs(var_con_none))
-                if(self.buscar(not case,i)):
+                #print("        el NONE es :"+str(i))
+                if(self.buscar(True,i)):
+                    #print("        HAY SOLUCION PARA FALSO")
                     continue
                 else:
-                    if(self.buscar(case,i)):
+                    if(self.buscar(False,i)):
+                        #print("        HAY SOLUCION PARA TRUE")
                         continue
                     else:
                         if(case==True):
@@ -387,40 +429,42 @@ def main():
     mapeo_valor = values_association(n)   # Celda
     mapeo_boolean = boolean_association(n,fijos) # Valor Booleano Asignado
 
-    disj = []
+    #disj = []
     count = 1
     unit_clausules = [[] for j in range(n**4)]
     
-    for linea in file_array:
+    #for linea in file_array:
 
-        disjunciones = re.split(" 0 ", linea)
-        if(disjunciones[len(disjunciones)-1]=="\n"):
-            disjunciones.pop()
-        disj.append(disjunciones)
+     #   disjunciones = re.split(" 0 ", linea)
+      #  if(disjunciones[len(disjunciones)-1]=="\n"):
+       #     disjunciones.pop()
+        #disj.append(disjunciones)
 
     firstCicle=True
+    n_to_pwr_4 = n**4
+    
     for linea in file_array[1:]:
-
-        if firstCicle and count > n**4:
+        if firstCicle and count > n_to_pwr_4:
             firstCicle = False
-        rest = count%(n**4)
+        rest = count%(n_to_pwr_4)
         disjunciones = re.split(" 0 ", linea)
         if(disjunciones[len(disjunciones)-1]=="\n"):
             disjunciones.pop()
         if not firstCicle:
             if rest ==0:
-                unit_clausules[(n**4)-1] = unit_clausules[(n**4)-1] + disjunciones
+                unit_clausules[(n_to_pwr_4)-1] = unit_clausules[(n_to_pwr_4)-1] + disjunciones
             else:
                 unit_clausules[rest-1]=unit_clausules[rest-1]+disjunciones
         else:
             if rest == 0:
-                unit_clausules[(n**4)-1]=disjunciones
+                unit_clausules[(n_to_pwr_4)-1]=disjunciones
             else:
                   unit_clausules[rest-1]=disjunciones
         count = count + 1
 
     # SE AGRUPAN LAS CLAUSULAS EN GRUPOS RESPECTIVOS A
     #CLAUSULA POR CELDAS
+    #print(unit_clausules)
     clausula = []
     for e in unit_clausules:
         group = []
@@ -444,20 +488,14 @@ def main():
         
     # AGRUPACION DE CLAUSULAS POR VARIABLE NO ASIGNADA
     agrupacion = clausule_association(no_asignados,clausula)
-    
-    #print(no_asignados)
-
-    # SE OBTIENE LOS ESTADOS DE LA CLAUSULA RESULTANTE    
-    estados = []
-    for e in clausula:
-        cl = {}
-        for x in e:
-            for j in x:
-                cl[str(abs(j))] = mapeo_boolean[str(abs(j))]
-        estados.append(cl)
-        
+    print(no_asignados)
+    #print(len(no_asignados))
+    print("")
+    print(mapeo_boolean)
+    print("")
     sol = SAT2(no_asignados,agrupacion)
 ###########################################################    
     
 if __name__ == "__main__":
     main()
+
