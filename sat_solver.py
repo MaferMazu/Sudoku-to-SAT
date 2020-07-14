@@ -180,6 +180,8 @@ def propagacion_unitaria(clausulas):
             #ASIGNACION DE UNICIDAD POR CELDA: Si la celda ya esta asignada se ponen todos 
             #los valores faltantes en False
             if(len(lista)>2):
+                print((clausulas[it1])[i])
+                
                 var_asignada = hayTrue(lista)
                 if(var_asignada!=None):
                     for elem in lista:
@@ -348,11 +350,9 @@ class Nodo2:
         index=0
         hay_solucion=True
         #Ciclo verdadero
-        #while index<len(self.clausulas):
+        while index<len(self.clausulas):
         #Ciclo Pruebas
-        while index<1:
-            print("ITERACION")
-            print(str(index))
+        #while index<1:
             if (not self.buscar(caso, index)):
                 hay_solucion =False
                 break
@@ -367,34 +367,27 @@ class Nodo2:
         #print("CASO: "+str(case)+" VARIABLE: "+str(self.variables[index]))
         
         for c in self.clausulas[index]:
-            print()
-            print("   CLAUSULA: "+str(c))
-            print("CLAUSULAS:")
-            print(self.clausulas[index])
-            print("")
-            
+            #print()
+            #print("   CLAUSULA: "+str(c))
             # ATIENDE LOS CASOS SI O NO DE NONE!
             var_con_none, existeN = self.tiene_none(c)
             if(not existeN):
-                print("      ENTRO EN CASO NO EXISTEN NONE:")
+                #print("      ENTRO EN CASO NO EXISTEN NONE:")
                 if(not self.evalua_true(c)):
-                    print("        No Evalua True")
-                    print(mapeo_boolean[str(abs(c[0]))])
-                    print(mapeo_boolean[str(abs(c[1]))])
-                    break
+                    #print("        No Evalua True")
                     if(case):
-                        return (True and self.buscar(False,index))
+                        return (True and self.buscar(not case,index))
                     else:
                         return False
             else:
                 #print("      ENTRO EN CASO EXISTE NONE:")
                 i = self.variables.index(abs(var_con_none))
                 #print("        el NONE es :"+str(i))
-                if(self.buscar(True,i)):
+                if(self.buscar(not case,i)):
                     #print("        HAY SOLUCION PARA FALSO")
                     continue
                 else:
-                    if(self.buscar(False,i)):
+                    if(self.buscar(case,i)):
                         #print("        HAY SOLUCION PARA TRUE")
                         continue
                     else:
@@ -489,10 +482,9 @@ def main():
     # AGRUPACION DE CLAUSULAS POR VARIABLE NO ASIGNADA
     agrupacion = clausule_association(no_asignados,clausula)
     print(no_asignados)
-    #print(len(no_asignados))
+    print(len(no_asignados))
     print("")
-    print(mapeo_boolean)
-    print("")
+    #print(mapeo_boolean)    
     sol = SAT2(no_asignados,agrupacion)
 ###########################################################    
     
