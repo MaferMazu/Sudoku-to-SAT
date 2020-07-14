@@ -61,6 +61,26 @@ def everyCell(sudoku):
             column = column + 1
         row = row + 1
     #expresion = expresion + "\n"
+
+def uniqueInCell(sudoku):
+    global expresion
+    global nConjunctions
+    global ALPHABET
+    row = 0
+    for line in sudoku:
+        column = 0
+        for elem in line:
+            for digit in ALPHABET[:(len(sudoku))]:
+                var = toVar(digit,row,column,sudoku)
+                for digit2 in ALPHABET[:(len(sudoku))]:
+                    var2 = toVar(digit2,row,column,sudoku)
+                    if var2 != var:
+                        expresion = expresion + "-"+str(var) + " " + "-"+str(var2)+ " 0 "
+                        nConjunctions = nConjunctions + 1
+            expresion = expresion + "\n"
+            #nConjunctions = nConjunctions + 1
+            column = column + 1
+        row = row + 1
     
 
 #Todas las filas deben tener los numeros de 1 a n
@@ -175,6 +195,7 @@ def SudokuToSat(filepath):
         sudoku=Sudoku(length,table)
         initialToTrue(sudoku)
         everyCell(sudoku)
+        uniqueInCell(sudoku)
         rowVerification(sudoku)
         columnVerification(sudoku)
         squareVerification(sudoku)
