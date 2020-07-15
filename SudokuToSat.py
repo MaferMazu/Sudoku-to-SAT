@@ -194,7 +194,7 @@ def SudokuToSat(filepath):
         length,table = getLengthAndTable(line)
         sudoku=Sudoku(length,table)
         initialToTrue(sudoku)
-        everyCell(sudoku)
+        #everyCell(sudoku)
         uniqueInCell(sudoku)
         rowVerification(sudoku)
         columnVerification(sudoku)
