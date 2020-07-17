@@ -1,4 +1,13 @@
 from sys import argv
+
+# Variables globales
+ALPHABET = ["1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","."]
+value = []
+clausulas=[]
+nClausulas=0
+n=0
+
+# Traducir de variables a coordenadas de sudoku
 def toSudoku(var,n):
     global ALPHABET
     var=int(var)
@@ -13,90 +22,18 @@ def toSudoku(var,n):
     digit=ALPHABET[:n][var-1]
     return digit,row,column
 
-ALPHABET = ["1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","."]
-value = []
-clausulas=[]
-nClausulas=0
-n=0
-
-def SatSolver(filepath):
+#De coordenadas pasar al numero de la variable
+def toVar(digit,row,column,n):
     global ALPHABET
-    global value
-    global clausulas
-    global nClausulas
-    global n
-    inputfile = open (filepath,'r')
-    lines = inputfile.readlines()
-    clausulas = []
-    for line in lines:
-        line=line.rstrip(" \n")
-        if line[0]=="c":
-            print(line)
-        else:
-            if line[0]=="p":
-                token=line.split(" ")
-                n = (float(token[2])**(1./3.))
-                n = int(n)+1
-                value = [None for i in range(int(token[2]))]
-            else:
-                myclau = line.split(" ")
-                #print(myclau)
-                trim = []
-                for elem in myclau:
-
-                    #print(elem)
-                    if elem!="0":
-                        #print(elem)
-                        elem=int(elem)
-                        trim.append(elem)
-                        #print(trim)
-                    else:
-                        if len(trim)>0:
-                            clausulas.append(trim)
-                        trim=[]
-                if len(trim)>0:
-                    clausulas.append(trim)
-    clausulas.sort(key=len)
-    #print(clausulas)
-    nClausulas = len(clausulas)
-    while len(clausulas)>0 and len(clausulas[0])==1:
-        valid=propUnitary(clausulas[0],clausulas,value)
-        if not valid:
-            print("Error en prop unitaria")
-            break
-    while nClausulas>0 and len(clausulas[0])==2:
-        #print(clausulas[0])
-        valid=propBinary(clausulas[0],clausulas,value)
-        if not valid:
-            print("Error en prop binaria")
-            break
-    discard()
-    nClausulas = len(clausulas)
-    while len(clausulas)>0 and len(clausulas[0])==1:
-        valid=propUnitary(clausulas[0],clausulas,value)
-        if not valid:
-            print("Error en prop unitaria")
-            break
-    while nClausulas>0 and len(clausulas[0])==2:
-        #print(clausulas[0])
-        valid=propBinary(clausulas[0],clausulas,value)
-        if not valid:
-            print("Error en prop binaria")
-            break
-    discard()
-    #print(clausulas)
-    #print(value)
-    for i in range(1,len(value)+1):
-        if value[i-1]==True:
-            print(toSudoku(i,n))
-    #Sols=Backtracking(value,clausulas)
-    """ print(Sols)
-    for j in Sols:
-        for i in range(1,len(j)+1):
-            if j[i-1]==True:
-                print(toSudoku(i,n)) """
+    digitIndex = (ALPHABET[:n]).index(digit)
+    lenght = n
+    maxi = (row+1) * (lenght**2)
+    mini = maxi - lenght**2
+    number = mini+1 + (column * lenght) + digitIndex
+    return number
 
 
+#Propagacion unitaria
 def propUnitary(elem_unit,clausulas,value):
     global nClausulas 
     if elem_unit[0]<0:
@@ -122,17 +59,17 @@ def propUnitary(elem_unit,clausulas,value):
     clausulas.sort(key=len)
     return True
 
+
+#Propagacion binaria
 def propBinary(elem_bin,clausulas,value):
     global nClausulas
     
-    #print(getValue(elem_bin[0]),getValue(elem_bin[1]))
     if getValue(elem_bin[0],value)==True:
         if getValue(elem_bin[1],value)==True or getValue(elem_bin[1],value)==False:
             clausulas.pop(0)
         else:
             binary=clausulas.pop(0)
             clausulas.append(binary)
-            #clausulas=clausulas[1:].append(clausulas[0])
     elif getValue(elem_bin[0],value)==False:
         if getValue(elem_bin[1],value)==False:
             return False
@@ -146,17 +83,13 @@ def propBinary(elem_bin,clausulas,value):
             clausulas[0].pop(1)
             propUnitary(clausulas[0],clausulas,value)
         else:
-            #print("Here")
-            #print(clausulas)
             binary = clausulas[0]
-            #print(binary)
             clausulas.pop(0)
             clausulas.append(binary)
-            #print(clausulas)
     nClausulas=nClausulas-1
     return True
 
-
+#Obtener el valor de una variable dentro de mi arreglo value
 def getValue(num,value):
     pos=0
     if num<0:
@@ -168,6 +101,7 @@ def getValue(num,value):
             return value[num-1]
     return None
 
+#Editar el valor de una variable en mi arreglo value
 def editValue(num,valor,value):
     pos=0
     if num<0:
@@ -176,31 +110,8 @@ def editValue(num,valor,value):
     else:
         value[num-1] = valor
 
-def toVar(digit,row,column,n):
-    global ALPHABET
-    digitIndex = (ALPHABET[:n]).index(digit)
-    lenght = n
-    maxi = (row+1) * (lenght**2)
-    mini = maxi - lenght**2
-    number = mini+1 + (column * lenght) + digitIndex
-    return number
 
-def Backtracking(value,clausulas):
-    global n
-    n = (float(len(value))**(1./3.))
-    n = int(n)+1
-    Sols = []
-    if withOutNone(value):
-        Sols.append(value)
-        return Sols
-    else:
-        #print("Tengo none")
-        clausulasval,valuesval = opValid(value,clausulas)
-        #print(clausulasval,valuesval)
-        for i in range(len(clausulasval)):
-            Sols=Sols+Backtracking(valuesval[i],clausulasval[i])
-        return Sols
-    
+#Otra optimizacion que me permite asignar valores por casilla si ya tengo suficiente info  
 def discard():
     global value
     global clausulas
@@ -210,19 +121,14 @@ def discard():
     findTrue=False
     for i in range(len(value)):
         if value[i]==None:
-            #print(value)
-            #print("Encontre None en ",i)
             digit,row,column=toSudoku(i+1,n)
-            #print("Este es el dig, row colim ",digit,row,column)
             for digit2 in ALPHABET[:n]:
                 if digit != digit2:
                     var=toVar(digit2,row,column,n)
                     if value[var-1]==False:
-                        #print("Encontre false dig row colum",digit2,row,column)
                         countFalse=countFalse+1
                     elif value[var-1]==True:
                         findTrue = True
-            #print("coount false y n-1",countFalse,n-1)
             if countFalse == n-1:
                 value[i]=True
                 countFalse=0
@@ -230,7 +136,6 @@ def discard():
                 nClausulas=nClausulas+1
                 propUnitary(clausulas[0],clausulas,value)
             elif findTrue:
-                #print("Asigne false")
                 value[i]=False
                 clausulas.insert(0,[(i*(-1))+1])
                 nClausulas=nClausulas+1
@@ -239,10 +144,25 @@ def discard():
             else:
                 countFalse=0
                 findTrue=False
-                #print("No asigne valor")
                 pass
 
+#Backtracking
+def Backtracking(value,clausulas):
+    global n
+    n = (float(len(value))**(1./3.))
+    n = int(n)+1
+    Sols = []
+    if withOutNone(value):
+        Sols.append(value)
+        return Sols
+    else:
+        clausulasval,valuesval = opValid(value,clausulas)
+        for i in range(len(clausulasval)):
+            Sols=Sols+Backtracking(valuesval[i],clausulasval[i])
+        return Sols
 
+
+#Me devuelve lista de operaciones validas para el backtracking
 def opValid(value,clausulas):
     global n
     global nClausulas
@@ -251,22 +171,21 @@ def opValid(value,clausulas):
     valuesval=[]
     for i in range(len(value)):
         if value[i]==None:
-            tryvalue = value
+            tryvalue = value.copy()
+            tryvalue2 = value.copy() 
+            tryclausulas = clausulas.copy()
+            tryclausulas2 = clausulas.copy()
+
+            #Probamos caso TRUE
             tryvalue[i]=True
-            tryclausulas = clausulas
-            tryclausulas2 = clausulas
-            print("Haré true ",i)
             tryclausulas.insert(0,[i+1])
             nClausulas=len(tryclausulas)
-            #print(tryclausulas)
             while len(clausulas)>0 and len(clausulas[0])==1:
                 valid=propUnitary(tryclausulas[0],tryclausulas,tryvalue)
                 if not valid:
                     print("Error en prop unitaria validaciones")
                     break
-            #digit,row,column=toSudoku(elem,n)
             while valid and nClausulas>0 and len(tryclausulas[0])==2:
-                #print(clausulas[0])
                 valid=propBinary(tryclausulas[0],tryclausulas,tryvalue)
                 if not valid:
                     print("Error en prop binaria validaciones")
@@ -276,21 +195,16 @@ def opValid(value,clausulas):
                 valuesval.append(tryvalue)
                 valid=False
             
-            tryvalue2 = value
+            #Probamos caso FALSE
             tryvalue2[i]=False
-            #print(tryclausulas2)
-            print("Haré false ",i)
             tryclausulas2.insert(0,[(i+1)*(-1)])
             nClausulas=len(tryclausulas2)
-            #print(tryclausulas2)
             while len(tryclausulas2)>0 and len(tryclausulas2[0])==1:
                 valid=propUnitary(tryclausulas2[0],tryclausulas2,tryvalue2)
                 if not valid:
                     print("Error en prop unitaria validaciones")
                     break
-            #digit,row,column=toSudoku(elem,n)
             while valid and nClausulas>0 and len(tryclausulas2[0])==2:
-                #print(clausulas[0])
                 valid=propBinary(tryclausulas2[0],tryclausulas2,tryvalue2)
                 if not valid:
                     print("Error en prop binaria validaciones")
@@ -301,18 +215,112 @@ def opValid(value,clausulas):
 
             return clausulasval,valuesval
 
-
+#Verificacion rapida de que no hay nones para backtracking
 def withOutNone(value):
     for elem in value:
         if elem==None:
             return False
     return True
 
+#Resolvedor de SAT
+def SatSolver(filepath):
+    global ALPHABET
+    global value
+    global clausulas
+    global nClausulas
+    global n
+    inputfile = open (filepath,'r')
+    lines = inputfile.readlines()
+    clausulas = []
+    output=""
+    for line in lines:
+        line=line.rstrip(" \n")
+        if line[0]=="c":
+            output=output+line+" \n"
+        else:
+            if line[0]=="p":
+                token=line.split(" ")
+                n = (float(token[2])**(1./3.))
+                n = int(n)+1
+                value = [None for i in range(int(token[2]))]
+                output=output+"s cnf "
+            else:
+                myclau = line.split(" ")
+                trim = []
+                for elem in myclau:
+                    if elem!="0":
+                        elem=int(elem)
+                        trim.append(elem)
+                    else:
+                        if len(trim)>0:
+                            clausulas.append(trim)
+                        trim=[]
+                if len(trim)>0:
+                    clausulas.append(trim)
+    
+    #Ordeno las clausulas
+    clausulas.sort(key=len)
+    nClausulas = len(clausulas)
+
+    #Si tengo para hacer propagacion unitaria y binaria
+    while len(clausulas)>0 and len(clausulas[0])==1:
+        valid=propUnitary(clausulas[0],clausulas,value)
+        if not valid:
+            print("Error en prop unitaria")
+            break
+    while nClausulas>0 and len(clausulas[0])==2:
+        valid=propBinary(clausulas[0],clausulas,value)
+        if not valid:
+            print("Error en prop binaria")
+            break
+    
+    #Aplico otra optimizacion
+    discard()
+    nClausulas = len(clausulas)
+
+    #Si tengo para hacer propagacion unitaria y binaria
+    while len(clausulas)>0 and len(clausulas[0])==1:
+        valid=propUnitary(clausulas[0],clausulas,value)
+        if not valid:
+            print("Error en prop unitaria")
+            break
+    while nClausulas>0 and len(clausulas[0])==2:
+        valid=propBinary(clausulas[0],clausulas,value)
+        if not valid:
+            print("Error en prop binaria")
+            
+    #Otra optimizacion
+    discard()
+
+    #Si con eso no lo resuelve le hago backtracking
+    Sols=Backtracking(value,clausulas)
+
+    #Creo mi output
+    if len(Sols)>0:
+        output=output+"1 "+str(n**3)+"\n"
+        for i in range(len(Sols[0])):
+            if Sols[0][i]==False:
+                output=output+"v -"+str(i+1)+"\n"
+            elif Sols[0][i]==True:
+                output=output+"v "+str(i+1)+"\n"
+    else:
+        output=output+"0 "+str(n**3)+"\n"
+
+    outputfile = open('outputs/outputSatSolver.txt',"w+")
+    outputfile.write(output)
+    outputfile.close()
+    inputfile.close()
+    """ print(Sols)
+    for j in Sols:
+        for i in range(1,len(j)+1):
+            if j[i-1]==True:
+                print(toSudoku(i,n)) """
+
 def main():
     #MAIN
     global ALPHABET
     #Leo archivo de entrada de un txt
-    filepath = 'outputs/output.txt'
+    filepath = 'outputs/outputSudokuToSat.txt'
     if len(argv) > 1:
         filepath = argv[1]
     SatSolver(filepath)
