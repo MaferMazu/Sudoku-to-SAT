@@ -285,3 +285,16 @@ Dependiendo de qué tanta información se pueda obtener de las cláusulas todo e
 ### Implementacion SolutionToSudoku
 
 Para esto lo que se hizo fue crear una matriz con los datos obtenidos del programa de zChaff y el de SatSolver, y el hacer la matriz tomó o(n²) con n siendo las dimensiones del sudoku.
+
+## La corrida de InstanciasSudoku.txt
+
+Esto se corre con el archivo ./scriptinstancias.sh
+Eso me va a retornar en la terminal y en el archivo outputs/outputinstancias.txt la resolución de los problemas.
+
+Actualmente de 46 ejercicios 30 presentan fallas por propagación unitaria y afirman que el problema es insatisfacible.
+
+Igual aquí se va a dejar un gráfico de rendimiento de zChaff vs nuestro programa.
+
+Se colocó en 200 segundos los problemas que quedaron insatisfacibles en representación de que no llegaron a ninguna respuesta cuando sí la tenía.
+
+![Gráfica de tiempos de ejecución de una muestra de 10 respuestas de sudoku](https://imgur.com/xuo7dTj)
