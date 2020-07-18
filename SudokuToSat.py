@@ -184,7 +184,7 @@ def SudokuToSat(filepath):
         global expresion
         expresion = ""
         nConjunctions = 0
-        output = "c Este es el tablero " + str(nTable) + " en CNF\n"
+        output = "c Este es el tablero " + str(filepath) + " en CNF\n"
         length,table = getLengthAndTable(line)
         sudoku=Sudoku(length,table)
         initialToTrue(sudoku)

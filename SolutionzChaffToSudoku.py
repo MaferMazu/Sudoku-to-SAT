@@ -2,28 +2,15 @@ from sys import argv
 def toSudoku(var,n):
     global ALPHABET
     var=int(var)
-    #print("mi n="+str(n))
-    #print(n**2)
     row = (var//(n**2))
     if var%(n**2)==0 and row!=0:
         row = row -1
-    #row = str(row)
-    #row = int(row[0])
-    #print("Mi init var="+str(var))
-    #print("Mi row="+str(row))
     var = var - row*(n**2)
-    #print("Mi var - row="+str(var))
     column = (var//n)
     if var%(n)==0 and column!=0:
         column = column -1
-    #column = str(column)
-    #column = int(column[0])
-    #print("Mi column="+str(column))
     var = var - column*n
-    #print("Mi var - column="+str(var))
     digit=ALPHABET[:n][var-1]
-    #print(digit,var)
-    #return var
     return digit,row,column
 
 def printOutput(n):
@@ -56,7 +43,6 @@ def SolutionToSudoku(filepath):
     number = 1
     time=-1
     for line in lines:
-        #print(line)
         if count == 5:
             line=line.rstrip("\n")
             variables = line.split(" ")[:-3]
@@ -71,12 +57,8 @@ def SolutionToSudoku(filepath):
             for elem in variables:
                 if len(elem)>0:
                     if elem[0] != "-":
-                        #print("La variable" + str(elem))
                         digit,row,column=toSudoku(elem,n+1)
-                        #print("p("+str(digit)+", "+str(row)+", "+str(column)+")")
-                        #print(matrix[row][column])
                         matrix[row][column] = digit
-                        #print(matrix)
             count = count +1
             
         elif count == 19:
@@ -98,7 +80,7 @@ def main():
     global ALPHABET
     global matrix
     global output
-    filepath = 'outputs/outputcnfexample.txt'
+    filepath = 'outputs/outputszchaff.txt'
     if len(argv) > 0:
         filepath = argv[1]
     SolutionToSudoku(filepath)

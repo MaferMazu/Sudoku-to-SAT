@@ -1,4 +1,5 @@
 from sys import argv
+import signal,time
 
 # Variables globales
 ALPHABET = ["1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","."]
@@ -6,6 +7,7 @@ value = []
 clausulas=[]
 nClausulas=0
 n=0
+output=""
 
 # Traducir de variables a coordenadas de sudoku
 def toSudoku(var,n):
@@ -222,6 +224,9 @@ def withOutNone(value):
             return False
     return True
 
+def handler(signum, frame):
+    raise Exception("end of time")
+
 #Resolvedor de SAT
 def SatSolver(filepath):
     global ALPHABET
@@ -229,6 +234,7 @@ def SatSolver(filepath):
     global clausulas
     global nClausulas
     global n
+    global output
     inputfile = open (filepath,'r')
     lines = inputfile.readlines()
     clausulas = []
@@ -303,13 +309,11 @@ def SatSolver(filepath):
                 output=output+"v -"+str(i+1)+"\n"
             elif Sols[0][i]==True:
                 output=output+"v "+str(i+1)+"\n"
-    else:
+    elif len(Sols)==0:
         output=output+"0 "+str(n**3)+"\n"
 
-    outputfile = open('outputs/outputSatSolver.txt',"w+")
-    outputfile.write(output)
-    outputfile.close()
     inputfile.close()
+    
     """ print(Sols)
     for j in Sols:
         for i in range(1,len(j)+1):
@@ -319,11 +323,31 @@ def SatSolver(filepath):
 def main():
     #MAIN
     global ALPHABET
+    global output
     #Leo archivo de entrada de un txt
     filepath = 'outputs/outputSudokuToSat.txt'
+    mytime=40000
     if len(argv) > 1:
-        filepath = argv[1]
-    SatSolver(filepath)
+        mytime = float(argv[1])
+        mytime=mytime/1000.0
+    
+    start_time = time.time()
+    # Register the signal function handler
+    signal.signal(signal.SIGALRM, handler)
+
+    # Define a timeout for your function
+    signal.setitimer(0,mytime,0.0)
+
+    try:
+        SatSolver(filepath)
+        
+    except:
+        output=output+"-1 "+str(n**3)+"\n"
+    outputfile = open('outputs/outputSatSolver.txt',"w+")
+    outputfile.write(output)
+    outputfile.close()
+    print(time.time() - start_time)
+    #print(output)
 
 if __name__ == "__main__":
     main()
