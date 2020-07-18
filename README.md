@@ -297,4 +297,4 @@ Igual aquí se va a dejar un gráfico de rendimiento de zChaff vs nuestro progra
 
 Se colocó en 200 segundos los problemas que quedaron insatisfacibles en representación de que no llegaron a ninguna respuesta cuando sí la tenía.
 
-![Gráfica de tiempos de ejecución de una muestra de 10 respuestas de sudoku](https://imgur.com/xuo7dTj)
+![Gráfica de tiempos de ejecución de una muestra de 10 respuestas de sudoku](https://i.imgur.com/xuo7dTj.png)
