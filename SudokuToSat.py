@@ -1,4 +1,11 @@
 from sys import argv
+
+#Variables globales
+expresion = ""
+nConjunctions = 0
+ALPHABET = ["1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","."]
+
+
 #Obtener informacion de un tablero
 def getLengthAndTable(line):
     tokens = line.split()
@@ -60,7 +67,6 @@ def everyCell(sudoku):
             nConjunctions = nConjunctions + 1
             column = column + 1
         row = row + 1
-    #expresion = expresion + "\n"
 
 def uniqueInCell(sudoku):
     global expresion
@@ -78,7 +84,6 @@ def uniqueInCell(sudoku):
                         expresion = expresion + "-"+str(var) + " " + "-"+str(var2)+ " 0 "
                         nConjunctions = nConjunctions + 1
             expresion = expresion + "\n"
-            #nConjunctions = nConjunctions + 1
             column = column + 1
         row = row + 1
     
@@ -103,7 +108,7 @@ def rowVerification(sudoku):
             expresion = expresion + "\n"  
             column = column + 1
         row = row + 1
-    #expresion = expresion + "\n"
+
 
 #Todas las columnas deben tener los numeros de 1 a n
 def columnVerification(sudoku):
@@ -125,7 +130,7 @@ def columnVerification(sudoku):
             expresion = expresion + "\n"  
             column = column + 1
         row = row + 1
-    #expresion = expresion + "\n"
+
 
 #Todas los cuadrantes deben tener los numeros de 1 a n
 def squareVerification(sudoku):
@@ -140,27 +145,20 @@ def squareVerification(sudoku):
         column = 0
         for elem in line:
             squareRow= row//squareLen
-            #print("squareRow "+str(squareRow))
             squareColumn = column//squareLen
-            #print("squareColumn "+str(squareColumn))
             for digit in ALPHABET[:(len(sudoku))]:
                 var = toVar(digit,row,column,sudoku)
                 disjun = "-"+str(var) + " "
                 for i in range(squareRow*squareLen,squareRow*squareLen+squareLen):
                     for j in range(squareColumn*squareLen,squareColumn*squareLen+squareLen):
-                        #print("Mi i y j "+str(i)+", "+str(j))
                         if i != row or j !=column:
-                            #print("Mi i y j distinto a en donde estoy"+str(i)+", "+str(j))
                             var = toVar(digit,i,j,sudoku)
                             expresion = expresion + disjun + "-"+str(var)+ " 0 "
                             nConjunctions = nConjunctions + 1    
             expresion = expresion + "\n"  
             column = column + 1
         row = row + 1
-    #expresion = expresion + "\n"
-
-
-        
+   
 
 #Convertir en variable
 def toVar(digit,row,column,sudoku):
@@ -172,29 +170,25 @@ def toVar(digit,row,column,sudoku):
     number = mini+1 + (column * lenght) + digitIndex
     return number
 
-
-expresion = ""
-nConjunctions = 0
-ALPHABET = ["1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","."]
-
+#El SudokuToSat
 def SudokuToSat(filepath):
     global ALPHABET
     global nTable
     inputfile = open (filepath,'r')
     lines = inputfile.readlines()
     nTable = 0
-    outputfile = open('outputs/output.txt',"w+")
+    outputfile = open('outputs/outputSudokuToSat.txt',"w+")
     for line in lines:
         global nConjunctions
         global output
         global expresion
         expresion = ""
         nConjunctions = 0
-        output = "c Este es el tablero " + str(nTable) + " en CNF\n"
+        output = "c Este es el tablero " + str(filepath) + " en CNF\n"
         length,table = getLengthAndTable(line)
         sudoku=Sudoku(length,table)
         initialToTrue(sudoku)
-        #everyCell(sudoku)
+        everyCell(sudoku)
         uniqueInCell(sudoku)
         rowVerification(sudoku)
         columnVerification(sudoku)
@@ -202,7 +196,7 @@ def SudokuToSat(filepath):
         expresion = expresion[:-3]
         output = output + "p cnf " + str((len(sudoku))**3) + " " + str(nConjunctions) + "\n"
         output = output + str(expresion) + "\n"
-        print(output)
+        #print(output)
         outputfile.write(output)
         nTable = nTable + 1
     outputfile.close()

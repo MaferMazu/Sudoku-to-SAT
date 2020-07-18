@@ -2,28 +2,15 @@ from sys import argv
 def varToProp(var,n):
     global ALPHABET
     var=int(var)
-    #print("mi n="+str(n))
-    #print(n**2)
     row = (var//(n**2))
     if var%(n**2)==0 and row!=0:
         row = row -1
-    #row = str(row)
-    #row = int(row[0])
-    #print("Mi init var="+str(var))
-    #print("Mi row="+str(row))
     var = var - row*(n**2)
-    #print("Mi var - row="+str(var))
     column = (var//n)
     if var%(n)==0 and column!=0:
         column = column -1
-    #column = str(column)
-    #column = int(column[0])
-    #print("Mi column="+str(column))
     var = var - column*n
-    #print("Mi var - column="+str(var))
     digit=ALPHABET[:n][var-1]
-    #print(digit,var)
-    #return var
     return "p("+str(digit)+", "+str(row)+", "+str(column)+")"
 
 
@@ -32,8 +19,8 @@ ALPHABET = ["1","2","3","4","5","6","7","8","9","A","B","C","D","E","F","G","H",
 def main():
     #MAIN
     global ALPHABET
-    filepath = 'outputs/output.txt'
-    if len(argv) > 0:
+    filepath = 'outputs/outputSudokuToSat.txt'
+    if len(argv) > 1:
         filepath = argv[1]
     inputfile = open (filepath,'r')
     lines = inputfile.readlines()
